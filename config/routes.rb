@@ -8,6 +8,11 @@ Rails.application.routes.draw do
         omniauth_callbacks: 'api/v1/auth/omniauth_callbacks'
       }
 
+      # UsersController
+      scope :users do
+        get 'current', to: 'users#current'
+      end
+
     end
   end
 
