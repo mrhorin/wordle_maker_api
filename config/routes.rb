@@ -5,7 +5,8 @@ Rails.application.routes.draw do
 
       # Authentication
       mount_devise_token_auth_for 'User', at: 'auth', controllers: {
-        omniauth_callbacks: 'api/v1/auth/omniauth_callbacks'
+        omniauth_callbacks: 'api/v1/auth/omniauth_callbacks',
+        sessions: 'api/v1/auth/sessions'
       }
 
       # UsersController
