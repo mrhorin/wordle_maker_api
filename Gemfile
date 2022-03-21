@@ -25,9 +25,9 @@ gem 'net-smtp', require: false
 # Use Rack CORS for handling Cross-Origin Resource Sharing (CORS), making cross-origin AJAX possible
 gem 'rack-cors'
 gem 'devise'
-gem 'devise_token_auth'
-gem 'omniauth', '~> 1.9'
+gem 'devise_token_auth', git: 'https://github.com/lynndylanhurley/devise_token_auth', ref: '23d6b81b14fe39b5e4ce2b0dde897e4abcd850e8'
 gem 'omniauth-twitter'
+gem 'omniauth-rails_csrf_protection'
 
 gem 'pry-rails'
 

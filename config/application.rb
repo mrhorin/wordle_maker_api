@@ -40,5 +40,8 @@ module WordleMakerApi
     config.middleware.use ActionDispatch::Cookies # Required for all session management
     config.middleware.use ActionDispatch::Session::CookieStore, config.session_options
     config.middleware.use ActionDispatch::Flash
+
+    # Don't use csrf tokens
+    config.action_controller.allow_forgery_protection = false
   end
 end
