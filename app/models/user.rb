@@ -5,4 +5,5 @@ class User < ActiveRecord::Base
   devise :database_authenticatable, :registerable, :validatable,
          :omniauthable, omniauth_providers: [:twitter]
   include DeviseTokenAuth::Concerns::User
+  has_many :games, dependent: :destroy
 end
