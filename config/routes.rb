@@ -15,6 +15,12 @@ Rails.application.routes.draw do
         get 'current', to: 'users#current'
       end
 
+      # GamesController
+      scope :games do
+        get 'langs', to: 'games#langs'
+        # post '/', to: 'games#create'
+      end
+
     end
   end
 
