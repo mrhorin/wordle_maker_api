@@ -18,7 +18,7 @@ Rails.application.routes.draw do
       # GamesController
       scope :games do
         get 'langs', to: 'games#langs'
-        # post '/', to: 'games#create'
+        post 'create', to: 'games#create'
       end
 
     end
