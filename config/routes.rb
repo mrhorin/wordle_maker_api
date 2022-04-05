@@ -20,6 +20,7 @@ Rails.application.routes.draw do
         post 'create', to: 'games#create'
         get 'list_current_games', to: 'games#list_current_games'
         get 'supported_langs', to: 'games#supported_langs'
+        get ':id', to: 'games#show'
       end
 
     end
