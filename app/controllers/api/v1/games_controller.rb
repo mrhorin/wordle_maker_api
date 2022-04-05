@@ -1,5 +1,5 @@
 class Api::V1::GamesController < ApplicationController
-  before_action :authenticate_api_v1_user!, except: [:supported_langs]
+  before_action :authenticate_api_v1_user!, except: []
 
   def supported_langs
     langs = Utils::Language.langs.map{|k,v| { name: v[:name], code: k.to_s}}
