@@ -17,8 +17,9 @@ Rails.application.routes.draw do
 
       # GamesController
       scope :games do
-        get 'langs', to: 'games#langs'
         post 'create', to: 'games#create'
+        get 'list_current_games', to: 'games#list_current_games'
+        get 'supported_langs', to: 'games#supported_langs'
       end
 
     end
