@@ -27,6 +27,40 @@ RSpec.describe Game, type: :model do
       end
     end
 
+    context 'desc' do
+      context 'nil の時' do
+        let(:hash){ {title: 'Pokemon Gen 1', desc: nil, lang: 'en', char_count: 5} }
+        it('false を返す'){ is_expected.to be_truthy }
+      end
+
+      context '2byte x 100文字 の時' do
+        let(:hash){
+          desc = ''
+          100.times{|i| desc += 'あ'}
+          {title: 'Pokemon Gen 1', desc: desc, lang: 'en', char_count: 5}
+        }
+        it('false を返す'){ is_expected.to be_truthy }
+      end
+
+      context '2byte x 101文字 の時' do
+        let(:hash){
+          desc = ''
+          101.times{|i| desc += 'あ'}
+          {title: 'Pokemon Gen 1', desc: desc, lang: 'en', char_count: 5}
+        }
+        it('true を返す'){ is_expected.to be_falsey }
+      end
+
+      context '1byte x 101文字 の時' do
+        let(:hash){
+          desc = ''
+          101.times{|i| desc += 'A'}
+          {title: 'Pokemon Gen 1', desc: desc, lang: 'en', char_count: 5}
+        }
+        it('true を返す'){ is_expected.to be_falsey }
+      end
+    end
+
     context 'lang' do
       context 'jpn の時' do
         let(:hash){ {title: 'あいうえお', lang: 'jpn', char_count: 5} }
