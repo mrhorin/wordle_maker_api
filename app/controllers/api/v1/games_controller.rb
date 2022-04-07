@@ -20,7 +20,7 @@ class Api::V1::GamesController < ApplicationController
     if api_v1_user_signed_in?
       game = Game.new(title: game_params[:title], desc: game_params[:desc], lang: game_params[:lang], char_count: game_params[:char_count], user_id: current_api_v1_user.id)
       if game.save
-        render json: { isLoggedIn: true, ok: true, message: "succeeded.", data: game }, status: 201
+        render json: { isLoggedIn: true, ok: true, message: "Created.", data: game }, status: 201
       else
         render json: { isLoggedIn: true, ok: false, message: "The parameter is incorrect." }, status: 500
       end
@@ -33,9 +33,22 @@ class Api::V1::GamesController < ApplicationController
     if api_v1_user_signed_in?
       game = Game.find(game_params[:id])
       if game.update(game_params)
-        render json: { isLoggedIn: true, ok: true, message: "succeeded.", data: game }, status: 201
+        render json: { isLoggedIn: true, ok: true, message: "Updated.", data: game }, status: 200
       else
         render json: { isLoggedIn: true, ok: false, message: "The parameter is incorrect." }, status: 500
+      end
+    else
+      render json: { isLoggedIn: false, ok: false, message: "You are not logged in." }, status: 401
+    end
+  end
+
+  def destroy
+    if api_v1_user_signed_in?
+      game = Game.find(params[:id])
+      if game.destroy
+        render json: { isLoggedIn: true, ok: true, message: "Deleted.", data: game }, status: 200
+      else
+        render json: { isLoggedIn: true, ok: false, message: "Failed." }, status: 500
       end
     else
       render json: { isLoggedIn: false, ok: false, message: "You are not logged in." }, status: 401

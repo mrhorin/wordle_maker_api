@@ -22,6 +22,7 @@ Rails.application.routes.draw do
         get 'supported_langs', to: 'games#supported_langs'
         get ':id', to: 'games#show'
         put ':id', to: 'games#update'
+        delete ':id', to: 'games#destroy'
       end
 
     end
