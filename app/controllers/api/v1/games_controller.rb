@@ -31,7 +31,7 @@ class Api::V1::GamesController < ApplicationController
 
   def update
     if api_v1_user_signed_in?
-      game = Gmae.find(game_params[:id])
+      game = Game.find(game_params[:id])
       if game.update(game_params)
         render json: { isLoggedIn: true, ok: true, message: "succeeded.", data: game }, status: 201
       else

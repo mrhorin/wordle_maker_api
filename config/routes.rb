@@ -21,6 +21,7 @@ Rails.application.routes.draw do
         get 'list_current_games', to: 'games#list_current_games'
         get 'supported_langs', to: 'games#supported_langs'
         get ':id', to: 'games#show'
+        put ':id', to: 'games#update'
       end
 
     end
