@@ -31,8 +31,8 @@ class Api::V1::GamesController < ApplicationController
 
   def update
     if api_v1_user_signed_in?
-      game = Game.find(game_params[:id])
-      if game.update(game_params)
+      game = Game.find(update_game_params[:id])
+      if game.update(update_game_params)
         render json: { isLoggedIn: true, ok: true, message: "Updated.", data: game }, status: 200
       else
         render json: { isLoggedIn: true, ok: false, message: "The parameter is incorrect." }, status: 500
@@ -67,5 +67,9 @@ class Api::V1::GamesController < ApplicationController
   private
     def game_params
       params.require(:game).permit(:id, :title, :char_count, :lang, :desc)
+    end
+
+    def update_game_params
+      params.require(:game).permit(:id, :title, :desc)
     end
 end
