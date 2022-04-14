@@ -11,9 +11,11 @@ class Api::V1::SubjectsController < ApplicationController
         invalid_words << word unless subject.save
       end
       if invalid_words.length == 0
-        render json: { isLoggedIn: true, ok: true, message: "All of words are Created." }, status: 201
+        render json: { isLoggedIn: true, ok: true, message: "All of the words have been created successfully." }, status: 201
+      elsif words_params.length > invalid_words.length
+        render json: { isLoggedIn: true, ok: true, message: "The words have been created successfully, but some of them were failed.", data: invalid_words }, status: 207
       else
-        render json: { isLoggedIn: true, ok: false, message: "Some of the parameters are incorrect.", data: invalid_words }, status: 500
+        render json: { isLoggedIn: true, ok: false, message: "The words are failed." }, status: 500
       end
     else
       render json: { isLoggedIn: false, ok: false, message: "You are not logged in." }, status: 401
