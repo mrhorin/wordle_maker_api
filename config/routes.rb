@@ -25,6 +25,11 @@ Rails.application.routes.draw do
         delete ':id', to: 'games#destroy'
       end
 
+      # SubjectsController
+      scope :subjects do
+        post 'create', to: 'subjects#create'
+      end
+
     end
   end
 
