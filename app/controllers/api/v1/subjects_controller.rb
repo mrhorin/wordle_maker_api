@@ -3,7 +3,7 @@ class Api::V1::SubjectsController < ApplicationController
 
   # Authenticated
   def create
-    game = Game.find(game_params[:game_id])
+    game = Game.find_by_id(game_params[:game_id])
     if api_v1_user_signed_in? && current_api_v1_user.id == game.user_id
       invalid_words = []
       words_params.each do |word|

@@ -1,4 +1,5 @@
 class Api::V1::GamesController < ApplicationController
+  include Pagination
   before_action :authenticate_api_v1_user!, except: [:show, :supported_langs]
 
   def supported_langs
@@ -7,7 +8,7 @@ class Api::V1::GamesController < ApplicationController
   end
 
   def show
-    game = Game.find_by(id:params[:id])
+    game = Game.find_by_id(params[:id])
     if game.present?
       render json: { ok: true, data: game }, status: 200
     else
@@ -31,7 +32,7 @@ class Api::V1::GamesController < ApplicationController
 
   def update
     if api_v1_user_signed_in?
-      game = Game.find(update_game_params[:id])
+      game = Game.find_by_id(update_game_params[:id])
       if game.update(update_game_params)
         render json: { isLoggedIn: true, ok: true, message: "Updated.", data: game }, status: 200
       else
@@ -44,7 +45,7 @@ class Api::V1::GamesController < ApplicationController
 
   def destroy
     if api_v1_user_signed_in?
-      game = Game.find(params[:id])
+      game = Game.find_by_id(params[:id])
       if game.destroy
         render json: { isLoggedIn: true, ok: true, message: "Deleted.", data: game }, status: 200
       else
@@ -59,6 +60,22 @@ class Api::V1::GamesController < ApplicationController
     if api_v1_user_signed_in?
       games = current_api_v1_user.games
       render json: { isLoggedIn: true, ok: true, message: "succeeded.", data: games }, status: 200
+    else
+      render json: { isLoggedIn: false, ok: false, message: "You are not logged in."}, status: 401
+    end
+  end
+
+  def subjects
+    if api_v1_user_signed_in?
+      game = Game.find_by_id(params[:id])
+      if game.present?
+        page = params[:page]
+        per = params[:per].present? ? params[:per] : 20
+        subjects_paginated = game.subjects.select(:id, :word).order(id: :desc).page(page).per(per)
+        render json: { isLoggedIn: true, ok: true, data: subjects_paginated }, status: 200
+      else
+        render json: { isLoggedIn: true, ok: false, message: "Notfound" }, status: 404
+      end
     else
       render json: { isLoggedIn: false, ok: false, message: "You are not logged in."}, status: 401
     end

@@ -10,7 +10,7 @@ gem 'mysql2', '~> 0.5'
 # Use Puma as the app server
 gem 'puma', '~> 5.0'
 # Build JSON APIs with ease. Read more: https://github.com/rails/jbuilder
-gem 'jbuilder', '~> 2.7'
+# gem 'jbuilder', '~> 2.7'
 # Use Active Model has_secure_password
 gem 'bcrypt', '~> 3.1.7'
 
@@ -30,7 +30,7 @@ gem 'devise'
 gem 'devise_token_auth', git: 'https://github.com/lynndylanhurley/devise_token_auth', ref: '23d6b81b14fe39b5e4ce2b0dde897e4abcd850e8'
 gem 'omniauth-twitter'
 gem 'omniauth-rails_csrf_protection'
-
+gem 'kaminari'
 gem 'pry-rails'
 
 group :development, :test do

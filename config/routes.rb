@@ -23,6 +23,7 @@ Rails.application.routes.draw do
         get ':id', to: 'games#show'
         put ':id', to: 'games#update'
         delete ':id', to: 'games#destroy'
+        get ':id/subjects', to: 'games#subjects'
       end
 
       # SubjectsController
