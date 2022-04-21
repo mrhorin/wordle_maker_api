@@ -72,7 +72,8 @@ class Api::V1::GamesController < ApplicationController
         page = params[:page]
         per = params[:per].present? ? params[:per] : 20
         subjects_paginated = game.subjects.select(:id, :word).order(id: :desc).page(page).per(per)
-        render json: { isLoggedIn: true, ok: true, data: subjects_paginated }, status: 200
+        pagination = pagination(subjects_paginated)
+        render json: { isLoggedIn: true, ok: true, data: {subjects: subjects_paginated, pagination: pagination} }, status: 200
       else
         render json: { isLoggedIn: true, ok: false, message: "Notfound" }, status: 404
       end
