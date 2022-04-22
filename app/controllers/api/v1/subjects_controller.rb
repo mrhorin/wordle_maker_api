@@ -7,7 +7,7 @@ class Api::V1::SubjectsController < ApplicationController
     if api_v1_user_signed_in? && current_api_v1_user.id == game.user_id
       invalid_words = []
       words_params.each do |word|
-        subject = Subject.create_or_find_by(game_id: game_params[:game_id], word: word)
+        subject = Subject.create_or_find_by(game_id: game_params[:game_id], word: word.upcase)
         invalid_words << word unless subject.save
       end
       if invalid_words.length == 0
