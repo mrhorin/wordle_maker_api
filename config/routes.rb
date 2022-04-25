@@ -29,6 +29,7 @@ Rails.application.routes.draw do
       # SubjectsController
       scope :subjects do
         post 'create', to: 'subjects#create'
+        delete ':id', to: 'subjects#destroy'
       end
 
     end

@@ -22,6 +22,19 @@ class Api::V1::SubjectsController < ApplicationController
     end
   end
 
+  def destroy
+    if api_v1_user_signed_in?
+      subject = Subject.find_by_id(params[:id])
+      if subject.destroy
+        render json: { isLoggedIn: true, ok: true, message: "Deleted.", data: subject }, status: 200
+      else
+        render json: { isLoggedIn: true, ok: false, message: "Failed." }, status: 500
+      end
+    else
+      render json: { isLoggedIn: false, ok: false, message: "You are not logged in." }, status: 401
+    end
+  end
+
   private
     def words_params
       params.require(:words)
