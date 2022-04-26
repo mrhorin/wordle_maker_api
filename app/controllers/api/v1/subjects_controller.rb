@@ -1,7 +1,8 @@
 class Api::V1::SubjectsController < ApplicationController
   before_action :authenticate_api_v1_user!, except: []
+  before_action :authenticate_owner, except: [:create]
 
-  # Authenticated
+  # Authenticated user
   def create
     if api_v1_user_signed_in?
       game = Game.find_by_id(game_params[:game_id])
@@ -26,37 +27,20 @@ class Api::V1::SubjectsController < ApplicationController
     end
   end
 
+  # Authenticated owner
   def update
-    if api_v1_user_signed_in?
-      subject = Subject.find_by_id(subject_params[:id])
-      if subject.present? && subject.game.owner == current_api_v1_user
-        if subject.update(subject_params.to_h.transform_values{|v| v.is_a?(String) ? v.upcase : v})
-          render json: { isLoggedIn: true, ok: true, message: "Updated.", data: subject }, status: 200
-        else
-          render json: { isLoggedIn: true, ok: false, message: subject.errors.messages, data: subject }, status: 500
-        end
-      else
-        render json: { isLoggedIn: false, ok: false, message: "You are not the owner of the game." }, status: 401
-      end
+    if @subject.update(subject_params.to_h.transform_values{|v| v.is_a?(String) ? v.upcase : v})
+      render json: { isLoggedIn: true, ok: true, message: "Updated.", data: @subject }, status: 200
     else
-      render json: { isLoggedIn: false, ok: false, message: "You are not logged in." }, status: 401
+      render json: { isLoggedIn: true, ok: false, message: @subject.errors.messages, data: @subject }, status: 500
     end
   end
 
   def destroy
-    if api_v1_user_signed_in?
-      subject = Subject.find_by_id(params[:id])
-      if subject.present? && subject.game.owner == current_api_v1_user
-        if subject.destroy
-          render json: { isLoggedIn: true, ok: true, message: "Deleted.", data: subject }, status: 200
-        else
-          render json: { isLoggedIn: true, ok: false, message: "Failed." }, status: 500
-        end
-      else
-        render json: { isLoggedIn: false, ok: false, message: "You are not the owner of the game." }, status: 401
-      end
+    if @subject.destroy
+      render json: { isLoggedIn: true, ok: true, message: "Deleted.", data: @subject }, status: 200
     else
-      render json: { isLoggedIn: false, ok: false, message: "You are not logged in." }, status: 401
+      render json: { isLoggedIn: true, ok: false, message: "Failed." }, status: 500
     end
   end
 
@@ -71,5 +55,11 @@ class Api::V1::SubjectsController < ApplicationController
 
     def game_params
       params.require(:game).permit(:game_id)
+    end
+
+    def authenticate_owner
+      return render json: { isLoggedIn: false, ok: false, message: "You are not logged in." }, status: 401 unless api_v1_user_signed_in?
+      @subject = Subject.find_by_id(params[:id])
+      return render json: { isLoggedIn: false, ok: false, message: "You are not the owner of the game." }, status: 401unless @subject.present? && @subject.game.owner == current_api_v1_user
     end
 end
