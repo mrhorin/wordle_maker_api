@@ -33,10 +33,14 @@ class Api::V1::GamesController < ApplicationController
   def update
     if api_v1_user_signed_in?
       game = Game.find_by_id(update_game_params[:id])
-      if game.update(update_game_params)
-        render json: { isLoggedIn: true, ok: true, message: "Updated.", data: game }, status: 200
+      if game.present? && game.owner == current_api_v1_user
+        if game.present? && game.update(update_game_params)
+          render json: { isLoggedIn: true, ok: true, message: "Updated.", data: game }, status: 200
+        else
+          render json: { isLoggedIn: true, ok: false, message: "The parameter is incorrect." }, status: 500
+        end
       else
-        render json: { isLoggedIn: true, ok: false, message: "The parameter is incorrect." }, status: 500
+        render json: { isLoggedIn: false, ok: false, message: "You are not the owner of the game." }, status: 401
       end
     else
       render json: { isLoggedIn: false, ok: false, message: "You are not logged in." }, status: 401
@@ -46,10 +50,14 @@ class Api::V1::GamesController < ApplicationController
   def destroy
     if api_v1_user_signed_in?
       game = Game.find_by_id(params[:id])
-      if game.destroy
-        render json: { isLoggedIn: true, ok: true, message: "Deleted.", data: game }, status: 200
+      if game.present? && game.owner == current_api_v1_user
+        if game.destroy
+          render json: { isLoggedIn: true, ok: true, message: "Deleted.", data: game }, status: 200
+        else
+          render json: { isLoggedIn: true, ok: false, message: "Failed." }, status: 500
+        end
       else
-        render json: { isLoggedIn: true, ok: false, message: "Failed." }, status: 500
+        render json: { isLoggedIn: false, ok: false, message: "You are not the owner of the game." }, status: 401
       end
     else
       render json: { isLoggedIn: false, ok: false, message: "You are not logged in." }, status: 401
@@ -68,14 +76,18 @@ class Api::V1::GamesController < ApplicationController
   def subjects
     if api_v1_user_signed_in?
       game = Game.find_by_id(params[:id])
-      if game.present?
-        page = params[:page]
-        per = params[:per].present? ? params[:per] : 20
-        subjects_paginated = game.subjects.select(:id, :word).order(id: :desc).page(page).per(per)
-        pagination = pagination(subjects_paginated)
-        render json: { isLoggedIn: true, ok: true, data: {subjects: subjects_paginated, pagination: pagination} }, status: 200
+      if game.present? && game.owner == current_api_v1_user
+        if game.present?
+          page = params[:page]
+          per = params[:per].present? ? params[:per] : 20
+          subjects_paginated = game.subjects.select(:id, :word).order(id: :desc).page(page).per(per)
+          pagination = pagination(subjects_paginated)
+          render json: { isLoggedIn: true, ok: true, data: {subjects: subjects_paginated, pagination: pagination} }, status: 200
+        else
+          render json: { isLoggedIn: true, ok: false, message: "Notfound" }, status: 404
+        end
       else
-        render json: { isLoggedIn: true, ok: false, message: "Notfound" }, status: 404
+        render json: { isLoggedIn: false, ok: false, message: "You are not the owner of the game." }, status: 401
       end
     else
       render json: { isLoggedIn: false, ok: false, message: "You are not logged in."}, status: 401
