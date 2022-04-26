@@ -60,6 +60,6 @@ class Api::V1::SubjectsController < ApplicationController
     def authenticate_owner
       return render json: { isLoggedIn: false, ok: false, message: "You are not logged in." }, status: 401 unless api_v1_user_signed_in?
       @subject = Subject.find_by_id(params[:id])
-      return render json: { isLoggedIn: false, ok: false, message: "You are not the owner of the game." }, status: 401unless @subject.present? && @subject.game.owner == current_api_v1_user
+      return render json: { isLoggedIn: false, ok: false, message: "You are not the owner of the game." }, status: 401 unless @subject.present? && @subject.game.owner == current_api_v1_user
     end
 end
