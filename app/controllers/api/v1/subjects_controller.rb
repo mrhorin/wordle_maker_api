@@ -22,6 +22,19 @@ class Api::V1::SubjectsController < ApplicationController
     end
   end
 
+  def update
+    if api_v1_user_signed_in?
+      subject = Subject.find_by_id(subject_params[:id])
+      if subject.update(subject_params)
+        render json: { isLoggedIn: true, ok: true, message: "Updated.", data: subject }, status: 200
+      else
+        render json: { isLoggedIn: true, ok: false, message: "The parameter is incorrect." }, status: 500
+      end
+    else
+      render json: { isLoggedIn: false, ok: false, message: "You are not logged in." }, status: 401
+    end
+  end
+
   def destroy
     if api_v1_user_signed_in?
       subject = Subject.find_by_id(params[:id])
@@ -36,6 +49,10 @@ class Api::V1::SubjectsController < ApplicationController
   end
 
   private
+    def subject_params
+      params.require(:subject).permit(:id, :word)
+    end
+
     def words_params
       params.require(:words)
     end
