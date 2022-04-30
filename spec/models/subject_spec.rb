@@ -53,7 +53,7 @@ RSpec.describe Subject, type: :model do
 
         context 'arbo2 の時' do
           let(:word){ 'arbo2' }
-          it('ture を返す'){ is_expected.to be_falsey }
+          it('false を返す'){ is_expected.to be_falsey }
         end
 
         context 'Arbok の時' do
