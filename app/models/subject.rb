@@ -1,7 +1,7 @@
 class Subject < ApplicationRecord
   validates :word, subject_word: true
-  validates :game_id, presence: true, uniqueness: { scope: :word, message: "should be unique to word" }
-  belongs_to :game
+  validates :game_id, subject_game_id: true, presence: true, uniqueness: { scope: :word, message: "should be unique to word" }
+  belongs_to :game, counter_cache: true
 
   def lang
     Utils::Language.lang game.lang
