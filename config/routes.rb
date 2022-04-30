@@ -18,6 +18,7 @@ Rails.application.routes.draw do
       scope :games do
         get 'list_current_games', to: 'games#list_current_games'
         get 'supported_langs', to: 'games#supported_langs'
+        get ':id/words', to: 'games#words'
         get ':id/subjects', to: 'games#subjects'
         get ':id', to: 'games#show'
         put ':id', to: 'games#update'

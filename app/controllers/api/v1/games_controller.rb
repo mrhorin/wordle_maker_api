@@ -1,7 +1,7 @@
 class Api::V1::GamesController < ApplicationController
   include Pagination
-  before_action :authenticate_api_v1_user!, except: [:show, :supported_langs]
-  before_action :authenticate_owner, except: [:show, :supported_langs, :list_current_games, :create]
+  before_action :authenticate_api_v1_user!, except: [:show, :words, :supported_langs]
+  before_action :authenticate_owner, except: [:show, :words, :supported_langs, :list_current_games, :create]
 
   def show
     game = Game.find_by_id(params[:id])
@@ -9,6 +9,15 @@ class Api::V1::GamesController < ApplicationController
       render json: { ok: true, data: game }, status: 200
     else
       render json: { ok: false, message: "Game ID #{params[:id]} Not Foundd" }, status: 404
+    end
+  end
+
+  def words
+    game = Game.find_by_id(params[:id])
+    if game.present?
+      render json: { ok: true, data: game.words }, status: 200
+    else
+      render json: { ok: false, message: "Game ID #{params[:id]} is not found" }, status: 404
     end
   end
 
