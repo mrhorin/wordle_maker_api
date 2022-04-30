@@ -16,13 +16,21 @@ RSpec.describe Game, type: :model do
         it('false を返す'){ is_expected.to be_falsey }
       end
 
-      context '21文字 の時' do
-        let(:hash){ {title: 'あいうえおかきくけこさしすせそなにぬねのた', lang: 'ja', char_count: 5} }
+      context '2byte x 101文字 の時' do
+        let(:hash){
+          title = ''
+          101.times{|i| title += 'あ'}
+          {title: title, lang: 'ja', char_count: 5}
+        }
         it('false を返す'){ is_expected.to be_falsey }
       end
 
-      context '20文字 の時' do
-        let(:hash){ {title: 'あいうえおかきくけこさしすせそなにぬねの', lang: 'ja', char_count: 5} }
+      context '2byte x 100文字 の時' do
+        let(:hash){
+          title = ''
+          100.times{|i| title += 'あ'}
+          {title: title, lang: 'ja', char_count: 5}
+        }
         it('true を返す'){ is_expected.to be_truthy }
       end
     end
@@ -33,28 +41,28 @@ RSpec.describe Game, type: :model do
         it('false を返す'){ is_expected.to be_truthy }
       end
 
-      context '2byte x 100文字 の時' do
+      context '2byte x 200文字 の時' do
         let(:hash){
           desc = ''
-          100.times{|i| desc += 'あ'}
+          200.times{|i| desc += 'あ'}
           {title: 'Pokemon Gen 1', desc: desc, lang: 'en', char_count: 5}
         }
         it('false を返す'){ is_expected.to be_truthy }
       end
 
-      context '2byte x 101文字 の時' do
+      context '2byte x 201文字 の時' do
         let(:hash){
           desc = ''
-          101.times{|i| desc += 'あ'}
+          201.times{|i| desc += 'あ'}
           {title: 'Pokemon Gen 1', desc: desc, lang: 'en', char_count: 5}
         }
         it('true を返す'){ is_expected.to be_falsey }
       end
 
-      context '1byte x 101文字 の時' do
+      context '1byte x 201文字 の時' do
         let(:hash){
           desc = ''
-          101.times{|i| desc += 'A'}
+          201.times{|i| desc += 'A'}
           {title: 'Pokemon Gen 1', desc: desc, lang: 'en', char_count: 5}
         }
         it('true を返す'){ is_expected.to be_falsey }
