@@ -1,7 +1,7 @@
 class Api::V1::GamesController < ApplicationController
   include Pagination
-  before_action :authenticate_api_v1_user!, except: [:show, :words, :supported_langs]
-  before_action :authenticate_owner, except: [:show, :words, :supported_langs, :list_current_games, :create]
+  before_action :authenticate_api_v1_user!, except: [:show, :word_list, :supported_langs]
+  before_action :authenticate_owner, except: [:show, :word_list, :supported_langs, :list_current_games, :create]
 
   def show
     game = Game.find_by_id(params[:id])
@@ -12,10 +12,10 @@ class Api::V1::GamesController < ApplicationController
     end
   end
 
-  def words
+  def word_list
     game = Game.find_by_id(params[:id])
     if game.present?
-      render json: { ok: true, data: game.words }, status: 200
+      render json: { ok: true, data: game.word_list }, status: 200
     else
       render json: { ok: false, message: "Game ID #{params[:id]} is not found" }, status: 404
     end
@@ -66,12 +66,12 @@ class Api::V1::GamesController < ApplicationController
     end
   end
 
-  def subjects
+  def words
     page = params[:page]
     per = params[:per].present? ? params[:per] : 50
-    subjects_paginated = @game.subjects.select(:id, :word).order(id: :desc).page(page).per(per)
-    pagination = pagination(subjects_paginated)
-    render json: { isLoggedIn: true, ok: true, data: {subjects: subjects_paginated, pagination: pagination} }, status: 200
+    words_paginated = @game.words.select(:id, :name).order(id: :desc).page(page).per(per)
+    pagination = pagination(words_paginated)
+    render json: { isLoggedIn: true, ok: true, data: {words: words_paginated, pagination: pagination} }, status: 200
   end
 
   private

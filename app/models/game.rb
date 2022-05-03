@@ -5,9 +5,9 @@ class Game < ApplicationRecord
   validates :char_count, presence: true, numericality: { only_integer: true, greater_than_or_equal_to: 2, less_than_or_equal_to: 10 }
   validates :user_id, presence: true
   belongs_to :owner, class_name: 'User', foreign_key: 'user_id'
-  has_many :subjects, dependent: :destroy
+  has_many :words, dependent: :destroy
 
-  def words
-    subjects.pluck(:word)
+  def word_list
+    words.pluck(:name)
   end
 end

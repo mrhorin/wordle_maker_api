@@ -1,4 +1,4 @@
-class Api::V1::SubjectsController < ApplicationController
+class Api::V1::WordsController < ApplicationController
   before_action :authenticate_api_v1_user!, except: []
   before_action :authenticate_owner, except: [:create]
 
@@ -8,13 +8,13 @@ class Api::V1::SubjectsController < ApplicationController
     game = Game.find_by_id(game_params[:game_id])
     return render json: { isLoggedIn: false, ok: false, message: "You are not the owner of the game." }, status: 401 unless game.present? && current_api_v1_user == game.owner
     invalid_words = []
-    words_params.each do |word|
-      subject = game.subjects.build(word: word.upcase)
-      invalid_words << word unless subject.save
+    word_list_params.each do |item|
+      word = game.words.build(name: item.upcase)
+      invalid_words << word unless word.save
     end
     if invalid_words.length == 0
       render json: { isLoggedIn: true, ok: true, message: "All of the words have been created successfully." }, status: 201
-    elsif words_params.length > invalid_words.length
+    elsif word_list_params.length > invalid_words.length
       render json: { isLoggedIn: true, ok: true, message: "The words have been created successfully, but some of them were failed.", data: invalid_words }, status: 207
     else
       render json: { isLoggedIn: true, ok: false, message: "The words are failed." }, status: 500
@@ -23,27 +23,27 @@ class Api::V1::SubjectsController < ApplicationController
 
   # Authenticated owner
   def update
-    if @subject.update(subject_params.to_h.transform_values{|v| v.is_a?(String) ? v.upcase : v})
-      render json: { isLoggedIn: true, ok: true, message: "Updated.", data: @subject }, status: 200
+    if @word.update(word_params.to_h.transform_values{|v| v.is_a?(String) ? v.upcase : v})
+      render json: { isLoggedIn: true, ok: true, message: "Updated.", data: @word }, status: 200
     else
-      render json: { isLoggedIn: true, ok: false, message: @subject.errors.messages, data: @subject }, status: 500
+      render json: { isLoggedIn: true, ok: false, message: @word.errors.messages, data: @word }, status: 500
     end
   end
 
   def destroy
-    if @subject.destroy
-      render json: { isLoggedIn: true, ok: true, message: "Deleted.", data: @subject }, status: 200
+    if @word.destroy
+      render json: { isLoggedIn: true, ok: true, message: "Deleted.", data: @word }, status: 200
     else
       render json: { isLoggedIn: true, ok: false, message: "Failed." }, status: 500
     end
   end
 
   private
-    def subject_params
-      params.require(:subject).permit(:id, :word)
+    def word_params
+      params.require(:word).permit(:id, :name)
     end
 
-    def words_params
+    def word_list_params
       params.require(:words)
     end
 
@@ -53,7 +53,7 @@ class Api::V1::SubjectsController < ApplicationController
 
     def authenticate_owner
       return render json: { isLoggedIn: false, ok: false, message: "You are not logged in." }, status: 401 unless api_v1_user_signed_in?
-      @subject = Subject.find_by_id(params[:id])
-      return render json: { isLoggedIn: false, ok: false, message: "You are not the owner of the game." }, status: 401 unless @subject.present? && @subject.game.owner == current_api_v1_user
+      @word = Word.find_by_id(params[:id])
+      return render json: { isLoggedIn: false, ok: false, message: "You are not the owner of the game." }, status: 401 unless @word.present? && @word.game.owner == current_api_v1_user
     end
 end
