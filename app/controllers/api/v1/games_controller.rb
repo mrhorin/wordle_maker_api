@@ -5,8 +5,9 @@ class Api::V1::GamesController < ApplicationController
 
   def show
     game = Game.find_by_id(params[:id])
+    word = game.questions.find_or_create_today.word
     if game.present?
-      render json: { ok: true, data: game }, status: 200
+      render json: { ok: true, data: {game: game, word: word} }, status: 200
     else
       render json: { ok: false, message: "Game ID #{params[:id]} Not Foundd" }, status: 404
     end

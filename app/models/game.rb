@@ -6,6 +6,13 @@ class Game < ApplicationRecord
   validates :user_id, presence: true
   belongs_to :owner, class_name: 'User', foreign_key: 'user_id'
   has_many :words, dependent: :destroy
+  has_many :questions, dependent: :destroy do
+    def find_or_create_today
+      find_or_create_by(published_on: Date.today) do |q|
+        q.word_id = Word.where(game_id: q.game_id).pluck(:id).shuffle.first
+      end
+    end
+  end
 
   def word_list
     words.pluck(:name)
