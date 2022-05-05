@@ -28,6 +28,7 @@ Rails.application.routes.draw do
 
       # WordsController
       scope :words do
+        get 'today/:game_id', to: 'words#today'
         put ':id', to: 'words#update'
         delete ':id', to: 'words#destroy'
         post 'create', to: 'words#create'

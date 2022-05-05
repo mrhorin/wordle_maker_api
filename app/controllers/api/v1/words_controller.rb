@@ -1,6 +1,15 @@
 class Api::V1::WordsController < ApplicationController
-  before_action :authenticate_api_v1_user!, except: []
-  before_action :authenticate_owner, except: [:create]
+  before_action :authenticate_api_v1_user!, except: [:today]
+  before_action :authenticate_owner, except: [:today, :create]
+
+  def today
+    game = Game.find_by_id(params[:game_id])
+    if game.present?
+      render json: { ok: true, data: game.questions.find_or_create_today.word }, status: 200
+    else
+      render json: { ok: false, message: "Game ID #{params[:game_id]} is not found." }, status: 404
+    end
+  end
 
   # Authenticated user
   def create
