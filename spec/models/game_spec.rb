@@ -117,6 +117,33 @@ RSpec.describe Game, type: :model do
         it('true を返す'){ is_expected.to be_truthy }
       end
     end
+
+    context 'challenge_count' do
+      context '1 の時' do
+        let(:hash){ {title: 'あいうえお', lang: 'ja', char_count: 4, challenge_count: 1} }
+        it('false を返す'){ is_expected.to be_falsey }
+      end
+
+      context '11 の時' do
+        let(:hash){ {title: 'あいうえお', lang: 'ja', char_count: 4, challenge_count: 11} }
+        it('false を返す'){ is_expected.to be_falsey }
+      end
+
+      context 'A の時' do
+        let(:hash){ {title: 'あいうえお', lang: 'en', char_count: 4, challenge_count: 'A'} }
+        it('false を返す'){ is_expected.to be_falsey }
+      end
+
+      context '2 の時' do
+        let(:hash){ {title: 'あいうえお', lang: 'en', char_count: 4, challenge_count: 2} }
+        it('true を返す'){ is_expected.to be_truthy }
+      end
+
+      context '10 の時' do
+        let(:hash){ {title: 'あいうえお', lang: 'en', char_count: 4, challenge_count: 10} }
+        it('true を返す'){ is_expected.to be_truthy }
+      end
+    end
   end
 
 end

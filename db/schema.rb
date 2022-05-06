@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2022_05_04_062212) do
+ActiveRecord::Schema.define(version: 2022_05_06_120352) do
 
   create_table "games", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "title", limit: 100, null: false
@@ -21,6 +21,7 @@ ActiveRecord::Schema.define(version: 2022_05_04_062212) do
     t.datetime "updated_at", precision: 6, null: false
     t.string "desc", limit: 200
     t.integer "words_count", default: 0
+    t.integer "challenge_count", default: 6
   end
 
   create_table "questions", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|

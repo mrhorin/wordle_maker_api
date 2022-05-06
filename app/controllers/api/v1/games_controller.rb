@@ -76,11 +76,11 @@ class Api::V1::GamesController < ApplicationController
 
   private
     def game_params
-      params.require(:game).permit(:id, :title, :char_count, :lang, :desc)
+      params.require(:game).permit(:id, :title, :challenge_count, :char_count, :lang, :desc)
     end
 
     def update_game_params
-      params.require(:game).permit(:id, :title, :desc)
+      params.require(:game).permit(:id, :title, :desc, :challenge_count)
     end
 
     def authenticate_owner
