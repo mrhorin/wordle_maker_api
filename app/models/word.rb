@@ -2,6 +2,7 @@ class Word < ApplicationRecord
   validates :name, word_name: true
   validates :game_id, word_game_id: true, presence: true, uniqueness: { scope: :name, message: "should be unique to name" }
   belongs_to :game, counter_cache: true
+  has_many :questions, dependent: :destroy
 
   def lang
     Utils::Language.lang game.lang
