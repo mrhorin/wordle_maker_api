@@ -15,7 +15,8 @@ class Api::V1::GamesController < ApplicationController
   def word_list
     game = Game.find_by_id(params[:id])
     if game.present?
-      render json: { ok: true, data: game.word_list }, status: 200
+      word_list = Rails.cache.fetch("word_list#{game.id}", skip_nil: true, expires_in: Time.now.at_end_of_day - Time.now){game.word_list}
+      render json: { ok: true, data: word_list }, status: 200
     else
       render json: { ok: false, message: "Game ID #{params[:id]} is not found" }, status: 404
     end
