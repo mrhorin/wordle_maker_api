@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2022_05_06_120352) do
+ActiveRecord::Schema.define(version: 2022_06_07_172655) do
 
   create_table "games", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "title", limit: 100, null: false
@@ -30,6 +30,8 @@ ActiveRecord::Schema.define(version: 2022_05_06_120352) do
     t.date "published_on"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.integer "no", null: false
+    t.index ["game_id", "no"], name: "index_questions_on_game_id_and_no", unique: true
     t.index ["game_id", "published_on"], name: "index_questions_on_game_id_and_published_on", unique: true
   end
 
