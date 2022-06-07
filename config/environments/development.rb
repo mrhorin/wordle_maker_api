@@ -27,7 +27,6 @@ Rails.application.configure do
   #   config.cache_store = :null_store
   # end
   # ActiveSupport::Cache::FileStore
-  config.action_controller.perform_caching = true
   config.cache_store = :file_store, "#{Rails.root}/tmp/cache"
 
   # Store uploaded files on the local file system (see config/storage.yml for options).
