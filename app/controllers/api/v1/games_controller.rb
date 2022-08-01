@@ -1,12 +1,12 @@
 class Api::V1::GamesController < ApplicationController
   include Pagination
+  before_action :check_suspended_game, except: [:supported_langs, :list_current_games , :create]
   before_action :authenticate_api_v1_user!, except: [:show, :word_list, :supported_langs]
-  before_action :authenticate_owner, except: [:show, :word_list, :supported_langs, :list_current_games, :create]
+  before_action :authenticate_owner, only: [:update, :destroy, :words]
 
   def show
-    game = Game.find_by_id(params[:id])
-    if game.present?
-      render json: { ok: true, data: game }, status: 200
+    if @game.present?
+      render json: { ok: true, data: @game }, status: 200
     else
       render json: { ok: false, message: "Game ID #{params[:id]} is not found." }, status: 404
     end
@@ -88,5 +88,10 @@ class Api::V1::GamesController < ApplicationController
       return render json: { isLoggedIn: false, ok: false, message: "You are not logged in."}, status: 401 unless api_v1_user_signed_in?
       @game = Game.find_by_id(params[:id])
       return render json: { isLoggedIn: false, ok: false, message: "You are not the owner of the game." }, status: 401 unless @game.present? && @game.owner == current_api_v1_user
+    end
+
+    def check_suspended_game
+      @game = Game.find_by_id(params[:id])
+      return render json: { ok: false, message: "This game is suspended for some reasons."}, status: 403 if @game.present? && @game.is_suspended
     end
 end
