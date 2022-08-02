@@ -14,7 +14,7 @@ class Api::V1::GamesController < ApplicationController
   end
 
   def word_list
-    if @game.present?
+    if @game.present? && @game.word_list
       word_list = Rails.cache.fetch("word_list#{@game.id}", skip_nil: true, expires_in: Time.now.at_end_of_day - Time.now){@game.word_list}
       render json: { ok: true, isSuspended: false, data: word_list }, status: 200
     else
