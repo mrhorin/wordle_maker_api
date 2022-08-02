@@ -6,7 +6,7 @@ class Api::V1::WordsController < ApplicationController
     game = Game.find_by_id(params[:game_id])
     return render json: { ok: false, message: "Game ID #{params[:game_id]} is not found." }, status: 404 unless game.present?
     question = game.questions.find_or_create_today
-    if question.present?
+    if question.word.present? && question.no.present?
       render json: { ok: true, data: { word: question.word, questionNo: question.no} }, status: 200
     else
       render json: { ok: false, message: "Game ID #{params[:game_id]} hasn't had any words yet." }, status: 404
