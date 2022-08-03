@@ -1,14 +1,14 @@
 class Api::V1::WordsController < ApplicationController
   include Pagination
   before_action :authenticate_api_v1_user!, except: [:index, :today]
-  before_action :authenticate_owner, except: [:index, :today, :create, :edit]
+  before_action :authenticate_owner, only: [:update, :destroy]
+  before_action :set_game, only: [:index, :today, :create, :edit]
 
   def index
-    game = Game.find_by_id(params[:game_id])
-    if game.present?
-      word_list = Rails.cache.fetch("word_list#{game.id}", skip_nil: true, expires_in: Time.now.at_end_of_day - Time.now){
-        return nil unless game.word_list.present?
-        game.word_list
+    if @game.present?
+      word_list = Rails.cache.fetch("word_list#{@game.id}", skip_nil: true, expires_in: Time.now.at_end_of_day - Time.now){
+        return nil unless @game.word_list.present?
+        @game.word_list
       }
       if word_list.present?
         render json: { ok: true, isSuspended: false, data: word_list }, status: 200
@@ -21,9 +21,8 @@ class Api::V1::WordsController < ApplicationController
   end
 
   def today
-    game = Game.find_by_id(params[:game_id])
-    return render json: { ok: false, message: "Game ID #{params[:game_id]} is not found." }, status: 404 unless game.present?
-    question = game.questions.find_or_create_today
+    return render json: { ok: false, message: "Game ID #{params[:game_id]} is not found." }, status: 404 unless @game.present?
+    question = @game.questions.find_or_create_today
     if question.word.present? && question.no.present?
       render json: { ok: true, data: { word: question.word, questionNo: question.no} }, status: 200
     else
@@ -33,12 +32,10 @@ class Api::V1::WordsController < ApplicationController
 
   # Authenticated user
   def create
-    return render json: { isLoggedIn: false, ok: false, message: "You are not logged in." }, status: 401 unless api_v1_user_signed_in?
-    game = Game.find_by_id(game_params[:game_id])
-    return render json: { isLoggedIn: false, ok: false, message: "You are not the owner of the game." }, status: 401 unless game.present? && current_api_v1_user == game.owner
+    return render json: { isLoggedIn: false, ok: false, message: "You are not the owner of the game." }, status: 401 unless @game.present? && current_api_v1_user == @game.owner
     invalid_words = []
     word_list_params.each do |item|
-      word = game.words.build(name: item.upcase)
+      word = @game.words.build(name: item.upcase)
       invalid_words << word unless word.save
     end
     if invalid_words.length == 0
@@ -52,11 +49,10 @@ class Api::V1::WordsController < ApplicationController
 
   # Authenticated owner
   def edit
-    game = Game.find_by_id(params[:game_id])
-    return render json: { ok: false, isLoggedIn: false, message: "You're not the owner of the game." }, status: 401 unless game.owner == current_api_v1_user
+    return render json: { ok: false, isLoggedIn: false, message: "You're not the owner of the game." }, status: 401 unless @game.owner == current_api_v1_user
     page = params[:page]
     per = params[:per].present? ? params[:per] : 50
-    words_paginated = game.words.select(:id, :name).order(id: :desc).page(page).per(per)
+    words_paginated = @game.words.select(:id, :name).order(id: :desc).page(page).per(per)
     pagination = pagination(words_paginated)
     render json: { ok: true, isLoggedIn: true, isSuspended: false, data: {words: words_paginated, pagination: pagination} }, status: 200
   end
@@ -88,6 +84,10 @@ class Api::V1::WordsController < ApplicationController
 
     def game_params
       params.require(:game).permit(:game_id)
+    end
+
+    def set_game
+      @game = Game.find_by_id(params[:game_id])
     end
 
     def authenticate_owner
