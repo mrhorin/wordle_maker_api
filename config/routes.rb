@@ -21,9 +21,12 @@ Rails.application.routes.draw do
           get 'supported_langs', to: 'games#supported_langs'
         end
 
-        member do
-          get 'word_list', to: 'games#word_list'
-          get 'words', to: 'games#words'
+        # /games/:game_id/words
+        resources :words, only: [] do
+          collection do
+            get '/', to: 'words#index'
+            get 'edit', to: 'words#edit'
+          end
         end
       end
 

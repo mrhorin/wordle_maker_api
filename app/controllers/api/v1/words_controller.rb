@@ -1,6 +1,24 @@
 class Api::V1::WordsController < ApplicationController
-  before_action :authenticate_api_v1_user!, except: [:today]
-  before_action :authenticate_owner, except: [:today, :create]
+  include Pagination
+  before_action :authenticate_api_v1_user!, except: [:index, :today]
+  before_action :authenticate_owner, except: [:index, :today, :create, :edit]
+
+  def index
+    game = Game.find_by_id(params[:game_id])
+    if game.present?
+      word_list = Rails.cache.fetch("word_list#{game.id}", skip_nil: true, expires_in: Time.now.at_end_of_day - Time.now){
+        return nil unless game.word_list.present?
+        game.word_list
+      }
+      if word_list.present?
+        render json: { ok: true, isSuspended: false, data: word_list }, status: 200
+      else
+        render json: { ok: false, isSuspended: false, message: "Game ID #{params[:id]} has no words yet." }, status: 404
+      end
+    else
+      render json: { ok: false, isSuspended: false, message: "Game ID #{params[:id]} is not found." }, status: 404
+    end
+  end
 
   def today
     game = Game.find_by_id(params[:game_id])
@@ -33,6 +51,16 @@ class Api::V1::WordsController < ApplicationController
   end
 
   # Authenticated owner
+  def edit
+    game = Game.find_by_id(params[:game_id])
+    return render json: { ok: false, isLoggedIn: false, message: "You're not the owner of the game." }, status: 401 unless game.owner == current_api_v1_user
+    page = params[:page]
+    per = params[:per].present? ? params[:per] : 50
+    words_paginated = game.words.select(:id, :name).order(id: :desc).page(page).per(per)
+    pagination = pagination(words_paginated)
+    render json: { ok: true, isLoggedIn: true, isSuspended: false, data: {words: words_paginated, pagination: pagination} }, status: 200
+  end
+
   def update
     if @word.update(word_params.to_h.transform_values{|v| v.is_a?(String) ? v.upcase : v})
       render json: { isLoggedIn: true, ok: true, message: "Updated.", data: @word }, status: 200

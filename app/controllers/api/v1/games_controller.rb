@@ -1,5 +1,4 @@
 class Api::V1::GamesController < ApplicationController
-  include Pagination
   before_action :authenticate_api_v1_user!, except: [:show, :word_list, :supported_langs]
   before_action :authenticate_owner, only: [:update, :destroy, :words]
   before_action :check_suspended_game, only: [:show, :word_list, :update, :destroy, :words]
@@ -8,22 +7,6 @@ class Api::V1::GamesController < ApplicationController
   def show
     if @game.present?
       render json: { ok: true, isSuspended: false, data: @game }, status: 200
-    else
-      render json: { ok: false, isSuspended: false, message: "Game ID #{params[:id]} is not found." }, status: 404
-    end
-  end
-
-  def word_list
-    if @game.present?
-      word_list = Rails.cache.fetch("word_list#{@game.id}", skip_nil: true, expires_in: Time.now.at_end_of_day - Time.now){
-        return nil unless @game.word_list.present?
-        @game.word_list
-      }
-      if word_list.present?
-        render json: { ok: true, isSuspended: false, data: word_list }, status: 200
-      else
-        render json: { ok: false, isSuspended: false, message: "Game ID #{params[:id]} has no words yet." }, status: 404
-      end
     else
       render json: { ok: false, isSuspended: false, message: "Game ID #{params[:id]} is not found." }, status: 404
     end
@@ -64,14 +47,6 @@ class Api::V1::GamesController < ApplicationController
     else
       render json: { ok: false, isLoggedIn: true, isSuspended: false, message: "Failed." }, status: 500
     end
-  end
-
-  def words
-    page = params[:page]
-    per = params[:per].present? ? params[:per] : 50
-    words_paginated = @game.words.select(:id, :name).order(id: :desc).page(page).per(per)
-    pagination = pagination(words_paginated)
-    render json: { ok: true, isLoggedIn: true, isSuspended: false, data: {words: words_paginated, pagination: pagination} }, status: 200
   end
 
   private
