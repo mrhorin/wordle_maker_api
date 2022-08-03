@@ -9,34 +9,30 @@ Rails.application.routes.draw do
         registrations: 'api/v1/auth/registrations'
       }
 
-      # UsersController
+      # /users
       scope :users do
         get 'current', to: 'users#current'
       end
 
-      # GamesController
-      scope :games do
-        get 'list_current_games', to: 'games#list_current_games'
-        get 'supported_langs', to: 'games#supported_langs'
+      # /games
+      resources :games, only: [:show, :update, :destroy, :create] do
+        collection do
+          get 'list_current_games', to: 'games#list_current_games'
+          get 'supported_langs', to: 'games#supported_langs'
+        end
 
-        get ':id/word_list', to: 'games#word_list'
-        get ':id/words', to: 'games#words'
-
-        get ':id', to: 'games#show'
-        put ':id', to: 'games#update'
-        delete ':id', to: 'games#destroy'
-        post '/', to: 'games#create'
+        member do
+          get 'word_list', to: 'games#word_list'
+          get 'words', to: 'games#words'
+        end
       end
 
-      # WordsController
-      scope :words do
-        get 'today/:game_id', to: 'words#today'
-
-        put ':id', to: 'words#update'
-        delete ':id', to: 'words#destroy'
-        post '/', to: 'words#create'
+      # /words
+      resources :words, only: [:update, :destroy, :create] do
+        collection do
+          get 'today/:game_id', to: 'words#today'
+        end
       end
     end
   end
-
 end
