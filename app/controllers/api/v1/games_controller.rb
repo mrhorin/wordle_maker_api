@@ -71,7 +71,7 @@ class Api::V1::GamesController < ApplicationController
 
     def check_suspended_game
       @game = Game.find_by_id(params[:id])
-      return render json: { ok: false, isSuspended: false, message: "This game is not found."}, status: 404 unless @game.present?
+      return render json: { ok: false, isSuspended: false, message: "Game ID #{params[:id]} is not found."}, status: 404 unless @game.present?
       return render json: { ok: false, isSuspended: true, message: "This game is suspended."}, status: 403 if @game.is_suspended || @game.owner.is_suspended
     end
 end

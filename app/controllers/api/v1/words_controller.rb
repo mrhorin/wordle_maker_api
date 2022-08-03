@@ -3,6 +3,7 @@ class Api::V1::WordsController < ApplicationController
   before_action :authenticate_api_v1_user!, except: [:index, :today]
   before_action :authenticate_owner, only: [:update, :destroy]
   before_action :set_game, only: [:index, :today, :create, :edit]
+  before_action :set_word, only: [:update, :destroy]
 
   def index
     word_list = Rails.cache.fetch("words_index#{@game.id}", skip_nil: true, expires_in: Time.now.at_end_of_day - Time.now){
@@ -87,11 +88,17 @@ class Api::V1::WordsController < ApplicationController
 
     def set_game
       @game = Game.find_by_id(params[:game_id])
-      render json: { ok: false, isSuspended: false, message: "Game ID #{params[:id]} is not found." }, status: 404 unless @game.present?
+      return render json: { ok: false, isSuspended: false, message: "Game ID #{params[:id]} is not found." }, status: 404 unless @game.present?
+      return render json: { ok: false, isSuspended: true, message: "This game is suspended."}, status: 403 if @game.is_suspended || @game.owner.is_suspended
+    end
+
+    def set_word
+      @word = Word.find_by_id(params[:id])
+      return render json: { ok: false, isSuspended: false, message: "Word ID #{params[:id]} is not found." }, status: 404 unless @word.present?
+      return render json: { ok: false, isSuspended: true, message: "This word is suspended."}, status: 403 if @word.game.is_suspended || @word.game.owner.is_suspended
     end
 
     def authenticate_owner
-      return render json: { isLoggedIn: false, ok: false, message: "You are not logged in." }, status: 401 unless api_v1_user_signed_in?
       @word = Word.find_by_id(params[:id])
       return render json: { isLoggedIn: false, ok: false, message: "You are not the owner of the game." }, status: 401 unless @word.present? && @word.game.owner == current_api_v1_user
     end
