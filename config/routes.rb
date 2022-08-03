@@ -17,7 +17,7 @@ Rails.application.routes.draw do
       # /games
       resources :games, only: [:show, :update, :destroy, :create] do
         collection do
-          get 'list_current_games', to: 'games#list_current_games'
+          get 'current_user_index', to: 'games#current_user_index'
           get 'supported_langs', to: 'games#supported_langs'
         end
 

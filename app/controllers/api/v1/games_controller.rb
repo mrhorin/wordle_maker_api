@@ -1,8 +1,8 @@
 class Api::V1::GamesController < ApplicationController
-  before_action :authenticate_api_v1_user!, except: [:show, :word_list, :supported_langs]
-  before_action :authenticate_owner, only: [:update, :destroy, :words]
-  before_action :check_suspended_game, only: [:show, :word_list, :update, :destroy, :words]
-  before_action :check_suspended_current_user, only: [:list_current_games , :create, :update, :destroy, :words]
+  before_action :authenticate_api_v1_user!, except: [:show, :supported_langs]
+  before_action :authenticate_owner, only: [:update, :destroy]
+  before_action :check_suspended_game, only: [:show, :update, :destroy]
+  before_action :check_suspended_current_user, only: [:current_user_index , :create, :update, :destroy]
 
   def show
     if @game.present?
@@ -18,7 +18,7 @@ class Api::V1::GamesController < ApplicationController
   end
 
   # Authenticated user
-  def list_current_games
+  def current_user_index
     games = current_api_v1_user.games
     render json: { ok: true, isLoggedIn: true, isSuspended: false, message: "succeeded.", data: games }, status: 200
   end
