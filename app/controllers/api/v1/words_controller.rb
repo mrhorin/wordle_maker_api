@@ -5,26 +5,25 @@ class Api::V1::WordsController < ApplicationController
   before_action :set_game, only: [:index, :today, :create, :edit]
 
   def index
-    if @game.present?
-      word_list = Rails.cache.fetch("word_list#{@game.id}", skip_nil: true, expires_in: Time.now.at_end_of_day - Time.now){
-        return nil unless @game.word_list.present?
-        @game.word_list
-      }
-      if word_list.present?
-        render json: { ok: true, isSuspended: false, data: word_list }, status: 200
-      else
-        render json: { ok: false, isSuspended: false, message: "Game ID #{params[:id]} has no words yet." }, status: 404
-      end
+    word_list = Rails.cache.fetch("words_index#{@game.id}", skip_nil: true, expires_in: Time.now.at_end_of_day - Time.now){
+      return nil unless @game.word_list.present?
+      @game.word_list
+    }
+    if word_list.present?
+      render json: { ok: true, isSuspended: false, data: word_list }, status: 200
     else
-      render json: { ok: false, isSuspended: false, message: "Game ID #{params[:id]} is not found." }, status: 404
+      render json: { ok: false, isSuspended: false, message: "Game ID #{params[:id]} has no words yet." }, status: 404
     end
   end
 
   def today
-    return render json: { ok: false, message: "Game ID #{params[:game_id]} is not found." }, status: 404 unless @game.present?
-    question = @game.questions.find_or_create_today
-    if question.word.present? && question.no.present?
-      render json: { ok: true, data: { word: question.word, questionNo: question.no} }, status: 200
+    today = Rails.cache.fetch("words_today#{@game.id}", skip_nil: true, expires_in: Time.now.at_end_of_day - Time.now){
+      question = @game.questions.find_or_create_today
+      return nil unless question.word.present? && question.no.present?
+      question
+    }
+    if today.present? && today.word.present? && today.no.present?
+      render json: { ok: true, data: { word: today.word, questionNo: today.no} }, status: 200
     else
       render json: { ok: false, message: "Game ID #{params[:game_id]} hasn't had any words yet." }, status: 404
     end
@@ -88,6 +87,7 @@ class Api::V1::WordsController < ApplicationController
 
     def set_game
       @game = Game.find_by_id(params[:game_id])
+      render json: { ok: false, isSuspended: false, message: "Game ID #{params[:id]} is not found." }, status: 404 unless @game.present?
     end
 
     def authenticate_owner
