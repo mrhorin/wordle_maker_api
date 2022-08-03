@@ -5,6 +5,7 @@ class Api::V1::GamesController < ApplicationController
   before_action :check_suspended_current_user, only: [:current_user_index , :create, :update, :destroy]
 
   def show
+    return render json: { ok: false, isSuspended: true, message: "This user is suspended."}, status: 403  if @game.owner.is_suspended
     if @game.present?
       render json: { ok: true, isSuspended: false, data: @game }, status: 200
     else
