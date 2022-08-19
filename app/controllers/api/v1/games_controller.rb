@@ -1,8 +1,13 @@
 class Api::V1::GamesController < ApplicationController
-  before_action :authenticate_api_v1_user!, except: [:show, :supported_langs]
+  before_action :authenticate_api_v1_user!, except: [:index, :show, :supported_langs]
   before_action :authenticate_owner, only: [:update, :destroy]
   before_action :check_suspended_game, only: [:show, :update, :destroy]
   before_action :check_suspended_current_user, only: [:current_user_index , :create, :update, :destroy]
+
+  def index
+    games = Game.where(is_suspended: false).order(id: :desc).limit(10)
+    render json: { ok: true, data: games }, status: 200
+  end
 
   def show
     return render json: { ok: false, isSuspended: true, message: "This user is suspended."}, status: 403  if @game.owner.is_suspended
