@@ -53,5 +53,5 @@ test:
 production:
   <<: *default
   database: wordle_maker_api_production
-  username: wordle_maker_api
-  password: <%= ENV['WORDLE_MAKER_API_DATABASE_PASSWORD'] %>
+  username: wordle_maker
+  password: wordle_maker
