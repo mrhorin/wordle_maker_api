@@ -8,6 +8,15 @@ GIT
       devise (> 3.5.2, < 5)
       rails (>= 4.2.0, < 7.1)
 
+GIT
+  remote: https://github.com/seuros/capistrano-puma.git
+  revision: e5d870fcc943abab62670f4a8efd2922e8333adf
+  specs:
+    capistrano3-puma (5.2.0)
+      capistrano (~> 3.7)
+      capistrano-bundler
+      puma (>= 4.0, < 6.0)
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -75,11 +84,27 @@ GEM
       minitest (>= 5.1)
       tzinfo (~> 2.0)
       zeitwerk (~> 2.3)
+    airbrussh (1.4.1)
+      sshkit (>= 1.6.1, != 1.7.0)
     bcrypt (3.1.16)
+    bcrypt_pbkdf (1.1.0)
     bootsnap (1.10.3)
       msgpack (~> 1.2)
     builder (3.2.4)
     byebug (11.1.3)
+    capistrano (3.17.1)
+      airbrussh (>= 1.0.0)
+      i18n
+      rake (>= 10.0.0)
+      sshkit (>= 1.9.0)
+    capistrano-bundler (2.1.0)
+      capistrano (~> 3.1)
+    capistrano-rails (1.6.2)
+      capistrano (~> 3.1)
+      capistrano-bundler (>= 1.1, < 3)
+    capistrano-rbenv (2.2.0)
+      capistrano (~> 3.1)
+      sshkit (~> 1.3)
     coderay (1.1.3)
     concurrent-ruby (1.1.9)
     crass (1.0.6)
@@ -91,6 +116,7 @@ GEM
       warden (~> 1.2.3)
     diff-lcs (1.5.0)
     digest (3.1.0)
+    ed25519 (1.3.0)
     erubi (1.10.0)
     ffi (1.15.5)
     globalid (1.0.0)
@@ -128,10 +154,13 @@ GEM
     net-protocol (0.1.2)
       io-wait
       timeout
+    net-scp (1.2.1)
+      net-ssh (>= 2.6.5)
     net-smtp (0.3.1)
       digest
       net-protocol
       timeout
+    net-ssh (7.0.1)
     nio4r (2.5.8)
     nokogiri (1.13.1-x86_64-linux)
       racc (~> 1.4)
@@ -222,6 +251,9 @@ GEM
       actionpack (>= 5.2)
       activesupport (>= 5.2)
       sprockets (>= 3.0.0)
+    sshkit (1.21.3)
+      net-scp (>= 1.1.2)
+      net-ssh (>= 2.8.0)
     thor (1.2.1)
     timeout (0.2.0)
     tzinfo (2.0.4)
@@ -239,10 +271,17 @@ PLATFORMS
 DEPENDENCIES
   active_storage_validations
   bcrypt (~> 3.1.7)
+  bcrypt_pbkdf
   bootsnap (>= 1.4.4)
   byebug
+  capistrano (~> 3.10)
+  capistrano-bundler
+  capistrano-rails (~> 1.6)
+  capistrano-rbenv
+  capistrano3-puma!
   devise
   devise_token_auth!
+  ed25519
   kaminari
   listen (~> 3.3)
   mysql2 (~> 0.5)

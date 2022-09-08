@@ -44,6 +44,13 @@ group :development do
   gem 'spring'
   gem 'rspec-rails'
 	gem 'shoulda-matchers', '~> 5.0'
+  gem 'capistrano', '~> 3.10', require: false
+  gem 'capistrano-rails', '~> 1.6', require: false
+  gem 'capistrano3-puma', github: 'seuros/capistrano-puma'
+	gem 'capistrano-rbenv'
+	gem 'capistrano-bundler'
+	gem 'ed25519'
+	gem 'bcrypt_pbkdf'
 end
 
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
