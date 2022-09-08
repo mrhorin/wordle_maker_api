@@ -55,6 +55,6 @@ production:
   socket: /var/lib/mysql/mysql.sock
   host: localhost
   port: 3306
-  username: wordle_maker
+  username: root
   password: wordle_maker
   database: wordle_maker_api_production
