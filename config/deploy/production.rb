@@ -62,20 +62,7 @@ role :db,  %w{mrhorin@sakura}
 #     # password: "please use keys"
 #   }
 
-# rbenv
-set :rbenv_type, :user # or :system, or :fullstaq (for Fullstaq Ruby), depends on your rbenv setup
-set :rbenv_ruby, '3.1.0'
-set :rbenv_prefix, "RBENV_ROOT=#{fetch(:rbenv_path)} RBENV_VERSION=#{fetch(:rbenv_ruby)} #{fetch(:rbenv_path)}/bin/rbenv exec"
-set :rbenv_map_bins, %w{rake gem bundle ruby rails}
-set :rbenv_roles, :all # default value
-append :rbenv_map_bins, 'puma', 'pumactl'
-
-# puma
-set :puma_threads, [0, 16]
-set :puma_workers, 2
-set :puma_pid, "#{shared_path}/tmp/pids/puma.pid"
-set :puma_bind, "unix://#{shared_path}/tmp/sockets/puma.sock"
-
-# bundle
-set :bundle_jobs, 4
-set :bundle_bins, fetch(:bundle_bins).to_a.concat(%w{ puma pumactl })
+# Prevent an error: 'manpath can't set the locale make sure $lc_* and $lang are correct'
+set :default_env, {
+  LANG: 'C.UTF-8'
+}

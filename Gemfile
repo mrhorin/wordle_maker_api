@@ -46,9 +46,10 @@ group :development do
 	gem 'shoulda-matchers', '~> 5.0'
   gem 'capistrano', '~> 3.10', require: false
   gem 'capistrano-rails', '~> 1.6', require: false
-  gem 'capistrano3-puma', github: 'seuros/capistrano-puma'
+  gem 'capistrano3-puma', require: false
 	gem 'capistrano-rbenv'
 	gem 'capistrano-bundler'
+  gem 'sshkit-sudo'
 	gem 'ed25519'
 	gem 'bcrypt_pbkdf'
 end
