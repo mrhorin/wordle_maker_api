@@ -53,7 +53,7 @@ append :rbenv_map_bins, 'puma', 'pumactl'
 
 # puma
 set :puma_threads, [0, 16]
-set :puma_workers, 1
+set :puma_workers, 2
 set :puma_pid, "#{shared_path}/tmp/pids/puma.pid"
 set :puma_bind, "unix://#{shared_path}/tmp/sockets/puma.sock"
 
