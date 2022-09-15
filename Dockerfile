@@ -13,4 +13,4 @@ COPY . /wordle_maker_api
 RUN bundle install --without production
 
 # Prevent an error: 'manpath can't set the locale make sure $lc_* and $lang are correct'
-RUN   sed -i "s|SendEnv LANG LC_*|#SendEnv LANG LC_*|g" /etc/ssh/ssh_config
+RUN sed -i "s|SendEnv LANG LC_*|#SendEnv LANG LC_*|g" /etc/ssh/ssh_config

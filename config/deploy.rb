@@ -41,12 +41,12 @@ set :keep_releases, 5
 # set :ssh_options, verify_host_key: :secure
 
 # If the environment differs from the stage name
-set :rails_env, 'staging'
+set :rails_env, 'production'
 
 # rbenv
 set :rbenv_type, :user # or :system, or :fullstaq (for Fullstaq Ruby), depends on your rbenv setup
 set :rbenv_ruby, '3.1.0'
-set :rbenv_prefix, "RBENV_ROOT=#{fetch(:rbenv_path)} RBENV_VERSION=#{fetch(:rbenv_ruby)} #{fetch(:rbenv_path)}/bin/rbenv exec"
+set :rbenv_prefix, "#{fetch(:rbenv_path)}/bin/rbenv exec"
 set :rbenv_map_bins, %w{rake gem bundle ruby rails}
 set :rbenv_roles, :all # default value
 append :rbenv_map_bins, 'puma', 'pumactl'
@@ -56,6 +56,13 @@ set :puma_threads, [0, 16]
 set :puma_workers, 2
 set :puma_pid, "#{shared_path}/tmp/pids/puma.pid"
 set :puma_bind, "unix://#{shared_path}/tmp/sockets/puma.sock"
+set :puma_service_unit_env_vars, %W[
+  RAILS_ENV=production
+  RBENV_ROOT=/home/mrhorin/.rbenv
+  RBENV_VERSION=#{fetch(:rbenv_ruby)}
+]
+before 'puma:restart', 'puma:config'
+after 'puma:config', 'puma:systemd:config'
 
 # bundle
 set :bundle_jobs, 4
@@ -65,7 +72,6 @@ set :bundle_bins, fetch(:bundle_bins).to_a.concat(%w{ puma pumactl })
 append :linked_files, "config/master.key"
 
 after 'deploy:publishing', 'deploy:restart'
-
 
 namespace :deploy do
   namespace :check do
