@@ -24,6 +24,7 @@ gem 'bootsnap', '>= 1.4.4', require: false
 
 gem 'net-smtp', require: false
 gem 'net-pop'
+gem 'net-imap'
 
 # Use Rack CORS for handling Cross-Origin Resource Sharing (CORS), making cross-origin AJAX possible
 gem 'rack-cors'
