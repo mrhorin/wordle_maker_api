@@ -23,6 +23,7 @@ gem 'active_storage_validations'
 gem 'bootsnap', '>= 1.4.4', require: false
 
 gem 'net-smtp', require: false
+gem 'net-pop'
 
 # Use Rack CORS for handling Cross-Origin Resource Sharing (CORS), making cross-origin AJAX possible
 gem 'rack-cors'
