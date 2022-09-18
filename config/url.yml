@@ -1,0 +1,17 @@
+production:
+  URL:
+    UI:
+      PROTOCOL: https
+      DOMAIN: makele.mrhori.org
+    API:
+      PROTOCOL: https
+      DOMAIN: makele.mrhori.org
+
+development:
+  URL:
+    UI:
+      PROTOCOL: http
+      DOMAIN: localhost:8000
+    API:
+      PROTOCOL: http
+      DOMAIN: localhost:3000
