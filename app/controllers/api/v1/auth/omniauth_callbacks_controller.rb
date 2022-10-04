@@ -18,7 +18,8 @@ class Api::V1::Auth::OmniauthCallbacksController < DeviseTokenAuth::OmniauthCall
 
   protected
   def render_data_or_redirect message, data, user_data = {}
-    redirect_to DeviseTokenAuth::Url.generate("#{Rails.configuration.app[:URL][:UI][:PROTOCOL]}://#{Rails.configuration.app[:URL][:UI][:DOMAIN]}/", data.merge(blank: true))
+    url = "#{Rails.configuration.app[:URL][:UI][:PROTOCOL]}://#{Rails.configuration.app[:URL][:UI][:DOMAIN]}/"
+    redirect_to DeviseTokenAuth::Url.generate(url, data.merge(blank: true))
   end
 
   def get_resource_from_auth_hash
