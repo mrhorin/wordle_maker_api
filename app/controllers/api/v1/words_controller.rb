@@ -88,8 +88,13 @@ class Api::V1::WordsController < ApplicationController
 
     def set_game
       @game = Game.find_by_id(params[:game_id])
-      return render json: { ok: false, isSuspended: false, message: "Game ID #{params[:id]} is not found." }, status: 404 unless @game.present?
-      return render json: { ok: false, isSuspended: true, message: "This game is suspended."}, status: 403 if @game.is_suspended || @game.owner.is_suspended
+      return render json: { ok: false, isPublished: @game.is_published, isSuspended: @game.is_suspended, message: "Game ID #{params[:id]} is not found." }, status: 404 unless @game.present?
+      return render json: { ok: false, isPublished: @game.is_published, isSuspended: @game.is_suspended, message: "This game is suspended."}, status: 403 if @game.is_suspended || @game.owner.is_suspended
+      unless @game.is_published
+        if !api_v1_user_signed_in? || @game.owner != current_api_v1_user
+          return render json: { ok: false, isPublished: @game.is_published, isSuspended: @game.is_suspended, message: "This game is not currently published."}, status: 403
+        end
+      end
     end
 
     def set_word

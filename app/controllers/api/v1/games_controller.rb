@@ -1,11 +1,12 @@
 class Api::V1::GamesController < ApplicationController
   before_action :authenticate_api_v1_user!, except: [:index, :show, :supported_langs]
   before_action :authenticate_owner, only: [:update, :destroy]
+  before_action :check_published_game, only: [:show]
   before_action :check_suspended_game, only: [:show, :update, :destroy]
   before_action :check_suspended_current_user, only: [:current_user_index , :create, :update, :destroy]
 
   def index
-    games = Game.where(is_suspended: false).order(id: :desc).limit(10)
+    games = Game.where(is_suspended: false, is_published: true).order(id: :desc).limit(10)
     render json: { ok: true, data: games }, status: 200
   end
 
@@ -57,11 +58,11 @@ class Api::V1::GamesController < ApplicationController
 
   private
     def game_params
-      params.require(:game).permit(:id, :title, :challenge_count, :char_count, :lang, :desc)
+      params.require(:game).permit(:id, :title, :challenge_count, :char_count, :lang, :desc, :is_published)
     end
 
     def update_game_params
-      params.require(:game).permit(:id, :title, :desc, :challenge_count)
+      params.require(:game).permit(:id, :title, :desc, :challenge_count, :is_published)
     end
 
     def authenticate_owner
@@ -78,5 +79,15 @@ class Api::V1::GamesController < ApplicationController
       @game = Game.find_by_id(params[:id])
       return render json: { ok: false, isSuspended: false, message: "Game ID #{params[:id]} is not found."}, status: 404 unless @game.present?
       return render json: { ok: false, isSuspended: true, message: "This game is suspended."}, status: 403 if @game.is_suspended || @game.owner.is_suspended
+    end
+
+    def check_published_game
+      @game = Game.find_by_id(params[:id])
+      return render json: { ok: false, isSuspended: false, message: "Game ID #{params[:id]} is not found."}, status: 404 unless @game.present?
+      unless @game.is_published
+        if !api_v1_user_signed_in? || @game.owner != current_api_v1_user
+          return render json: { ok: false, isSuspended: @game.is_suspended, isPublished: false, message: "This game is not currently published."}, status: 403
+        end
+      end
     end
 end

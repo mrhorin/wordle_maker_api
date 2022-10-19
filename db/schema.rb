@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2022_08_01_101849) do
+ActiveRecord::Schema.define(version: 2022_10_19_050616) do
 
   create_table "games", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "title", limit: 100, null: false
@@ -23,6 +23,7 @@ ActiveRecord::Schema.define(version: 2022_08_01_101849) do
     t.integer "words_count", default: 0
     t.integer "challenge_count", default: 6
     t.boolean "is_suspended", default: false
+    t.boolean "is_published", default: false
   end
 
   create_table "questions", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
