@@ -1,9 +1,9 @@
 class Api::V1::WordsController < ApplicationController
   include Pagination
+  before_action :set_game, only: [:index, :today, :create, :edit]
+  before_action :set_word, only: [:update, :authenticate_owner]
   before_action :authenticate_api_v1_user!, except: [:index, :today]
   before_action :authenticate_owner, only: [:update, :destroy]
-  before_action :set_game, only: [:index, :today, :create, :edit]
-  before_action :set_word, only: [:update, :destroy]
 
   def index
     word_list = Rails.cache.fetch("words_index#{@game.id}", skip_nil: true, expires_in: Time.now.at_end_of_day - Time.now){
@@ -66,8 +66,10 @@ class Api::V1::WordsController < ApplicationController
   end
 
   def destroy
-    if @word.destroy
-      render json: { isLoggedIn: true, ok: true, message: "Deleted.", data: @word }, status: 200
+    ids = params[:id].split(",").map{|s| s.to_i }
+    authenticated_words = Word.left_joins(:game).where(id: ids, game: {user_id: current_api_v1_user})
+    if authenticated_words.destroy_all
+      render json: { isLoggedIn: true, ok: true, message: "Deleted." }, status: 200
     else
       render json: { isLoggedIn: true, ok: false, message: "Failed." }, status: 500
     end
