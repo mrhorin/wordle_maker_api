@@ -1,9 +1,9 @@
 class Api::V1::WordsController < ApplicationController
   include Pagination
-  before_action :set_game, only: [:index, :today, :create, :edit]
-  before_action :set_word, only: [:update, :authenticate_owner]
+  before_action :set_game, except: [:update, :destroy]
+  before_action :set_word, except: [:index, :today, :create, :edit, :destroy]
   before_action :authenticate_api_v1_user!, except: [:index, :today]
-  before_action :authenticate_owner, only: [:update, :destroy]
+  before_action :authenticate_owner, except: [:index, :today, :create, :edit]
 
   def index
     word_list = Rails.cache.fetch("words_index#{@game.id}", skip_nil: true, expires_in: Time.now.at_end_of_day - Time.now){

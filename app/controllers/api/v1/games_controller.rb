@@ -1,9 +1,9 @@
 class Api::V1::GamesController < ApplicationController
   before_action :authenticate_api_v1_user!, except: [:index, :show, :supported_langs]
-  before_action :authenticate_owner, only: [:update, :destroy]
-  before_action :check_published_game, only: [:show]
-  before_action :check_suspended_game, only: [:show, :update, :destroy]
-  before_action :check_suspended_current_user, only: [:current_user_index , :create, :update, :destroy]
+  before_action :authenticate_owner, except: [:index, :show, :supported_langs, :current_user_index, :create]
+  before_action :check_published_game, except: [:index, :supported_langs, :current_user_index, :create, :update, :destroy]
+  before_action :check_suspended_game, except: [:index, :supported_langs, :current_user_index, :create]
+  before_action :check_suspended_current_user, except: [:index, :show, :supported_langs]
 
   def index
     games = Game.where(is_suspended: false, is_published: true).order(id: :desc).limit(10)
