@@ -1,5 +1,7 @@
 class Api::V1::WordsController < ApplicationController
   include Pagination
+  include WordsHelper
+
   before_action :set_game, except: [:update, :destroy]
   before_action :set_word, except: [:index, :today, :create, :edit, :destroy]
   before_action :authenticate_api_v1_user!, except: [:index, :today]
@@ -49,10 +51,9 @@ class Api::V1::WordsController < ApplicationController
 
   # Authenticated owner
   def edit
+    edit_params = get_edit_params params
     return render json: { ok: false, isLoggedIn: false, message: "You're not the owner of the game." }, status: 401 unless @game.owner == current_api_v1_user
-    page = params[:page]
-    per = params[:per].present? ? params[:per] : 50
-    words_paginated = @game.words.select(:id, :name).order(id: :desc).page(page).per(per)
+    words_paginated = @game.words.select(:id, :name).order(edit_params[:sort] => edit_params[:order]).page(edit_params[:page]).per(edit_params[:per])
     pagination = pagination(words_paginated)
     render json: { ok: true, isLoggedIn: true, isSuspended: false, data: {words: words_paginated, pagination: pagination} }, status: 200
   end
