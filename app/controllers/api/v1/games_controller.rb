@@ -7,15 +7,15 @@ class Api::V1::GamesController < ApplicationController
 
   def index
     games = Game.where(is_suspended: false, is_published: true).order(id: :desc).limit(10)
-    render json: { ok: true, data: games }, status: 200
+    render json: { ok: true, data: games, statusCode: 200 }, status: 200
   end
 
   def show
-    return render json: { ok: false, isSuspended: true, message: "This user is suspended."}, status: 403  if @game.owner.is_suspended
+    return render json: { ok: false, isSuspended: true, statusCode: 403, message: I18n.t('users.is_suspended')}, status: 403  if @game.owner.is_suspended
     if @game.present?
-      render json: { ok: true, isSuspended: false, data: @game }, status: 200
+      render json: { ok: true, isSuspended: false, data: @game, statusCode: 200 }, status: 200
     else
-      render json: { ok: false, isSuspended: false, message: "Game ID #{params[:id]} is not found." }, status: 404
+      render json: { ok: false, isSuspended: false, message: I18n.t('games.not_found'), statusCode: 404 }, status: 404
     end
   end
 
@@ -44,7 +44,7 @@ class Api::V1::GamesController < ApplicationController
     if @game.update(update_game_params)
       render json: { ok: true, isLoggedIn: true, isSuspended: false, message: "Updated.", data: @game }, status: 200
     else
-      render json: { ok: false, isLoggedIn: true, isSuspended: false, message: "The parameter is incorrect." }, status: 500
+      render json: { ok: false, isLoggedIn: true, isSuspended: false, message: "Failed." }, status: 500
     end
   end
 
@@ -66,27 +66,27 @@ class Api::V1::GamesController < ApplicationController
     end
 
     def authenticate_owner
-      return render json: { ok: false, isLoggedIn: false, message: "You're not logged in."}, status: 401 unless api_v1_user_signed_in?
+      return render json: { ok: false, isLoggedIn: false, statusCode: 401, message: I18n.t('users.not_logged_in')}, status: 401 unless api_v1_user_signed_in?
       @game = Game.find_by_id(params[:id])
-      return render json: { ok: false, isLoggedIn: false, message: "You're not the owner of the game." }, status: 401 unless @game.owner == current_api_v1_user
+      return render json: { ok: false, isLoggedIn: false, statusCode: 401, message: I18n.t('games.not_owner') }, status: 401 unless @game.owner == current_api_v1_user
     end
 
     def check_suspended_current_user
-      return render json: { ok: false, isSuspended: true, message: "Your account is suspended."}, status: 403 if current_api_v1_user.is_suspended
+      return render json: { ok: false, isSuspended: true, statusCode: 403, message: I18n.t('users.is_suspended')}, status: 403 if current_api_v1_user.is_suspended
     end
 
     def check_suspended_game
       @game = Game.find_by_id(params[:id])
-      return render json: { ok: false, isSuspended: false, message: "Game ID #{params[:id]} is not found."}, status: 404 unless @game.present?
-      return render json: { ok: false, isSuspended: true, message: "This game is suspended."}, status: 403 if @game.is_suspended || @game.owner.is_suspended
+      return render json: { ok: false, isSuspended: false, statusCode: 404, message: I18n.t('games.not_found')}, status: 404 unless @game.present?
+      return render json: { ok: false, isSuspended: true, statusCode: 403, message: I18n.t('games.is_suspended')}, status: 403 if @game.is_suspended || @game.owner.is_suspended
     end
 
     def check_published_game
       @game = Game.find_by_id(params[:id])
-      return render json: { ok: false, isSuspended: false, message: "Game ID #{params[:id]} is not found."}, status: 404 unless @game.present?
+      return render json: { ok: false, isSuspended: false, statusCode: 404, message: I18n.t('games.not_found')}, status: 404 unless @game.present?
       unless @game.is_published
         if !api_v1_user_signed_in? || @game.owner != current_api_v1_user
-          return render json: { ok: false, isSuspended: @game.is_suspended, isPublished: false, message: "This game is not currently published."}, status: 403
+          return render json: { ok: false, isSuspended: @game.is_suspended, isPublished: false, statusCode: 403, message: I18n.t('games.not_published') }, status: 403
         end
       end
     end
