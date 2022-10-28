@@ -7,3 +7,4 @@ en:
     not_owner: You are not the owner of this game.
     not_published: This game is not currently published.
     is_suspended:  This game is currently suspended.
+    owner_is_suspended: The owner of this game is suspended.
