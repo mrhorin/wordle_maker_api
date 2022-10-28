@@ -1,5 +1,5 @@
 module WordsHelper
-  def get_edit_params params
+  def parse_edit_params params
     page = params[:page].present? ? params[:page] : 1
     per = params[:per].present? ? params[:per] : 50
     sort = params[:s] == "name" ? "name" : "id"
