@@ -85,7 +85,7 @@ class Api::V1::WordsController < ApplicationController
 
     # set
     def set_game
-      @game = Game.find_by_id(params[:game_id])
+      @game ||= Game.find_by_id params[:game_id]
       render_game_not_found if @game.blank?
       render_game_suspended if @game.is_suspended || @game.owner.is_suspended
       unless @game.is_published
@@ -95,7 +95,7 @@ class Api::V1::WordsController < ApplicationController
     end
 
     def set_word
-      @word = Word.find_by_id(params[:id])
+      @word ||= Word.find_by_id params[:id]
       render_word_not_found if @word.blank?
       render_game_suspended if @word.game.is_suspended || @word.game.owner.is_suspended
       unless @word.game.is_published

@@ -24,17 +24,15 @@ Rails.application.routes.draw do
         resources :words, only: [] do
           collection do
             get '/', to: 'words#index'
+            get 'today', to: 'words#today'
             get 'edit', to: 'words#edit'
           end
         end
       end
 
       # /words
-      resources :words, only: [:update, :destroy, :create] do
-        collection do
-          get 'today/:game_id', to: 'words#today'
-        end
-      end
+      resources :words, only: [:update, :destroy, :create]
+
     end
   end
 end
