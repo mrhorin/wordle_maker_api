@@ -17,6 +17,7 @@ Rails.application.routes.draw do
       # /games
       resources :games, only: [:index, :show, :update, :destroy, :create] do
         collection do
+          get 'play/:id', to: 'games#play'
           get 'current-user-index', to: 'games#current_user_index'
         end
 

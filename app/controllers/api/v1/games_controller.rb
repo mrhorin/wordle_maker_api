@@ -1,10 +1,22 @@
 class Api::V1::GamesController < ApplicationController
-  before_action :set_game_by_params, except: [:index, :supported_langs, :current_user_index, :create]
-  before_action :authenticate_api_v1_user!, except: [:index, :show, :supported_langs]
-  before_action :authenticate_game_owner, except: [:index, :show, :supported_langs, :current_user_index, :create]
-  before_action :check_published_game, except: [:index, :supported_langs, :current_user_index, :create, :update, :destroy]
-  before_action :check_suspended_game, except: [:index, :supported_langs, :current_user_index, :create]
-  before_action :check_suspended_current_user, except: [:index, :show, :supported_langs]
+  before_action :set_game_by_params, except: [:index, :current_user_index, :create]
+  before_action :authenticate_api_v1_user!, except: [:play, :index, :show, ]
+  before_action :authenticate_game_owner, except: [:play, :index, :show,  :current_user_index, :create]
+  before_action :check_published_game, except: [:index, :current_user_index, :create, :update, :destroy]
+  before_action :check_suspended_game, except: [:index, :current_user_index, :create]
+  before_action :check_suspended_current_user, except: [:index, :show, ]
+
+  def play
+    render_game_not_found if @game.blank?
+    render_game_owner_suspended if @game.owner.is_suspended
+    today = Rails.cache.fetch("words_today#{@game.id}", skip_nil: true, expires_in: Time.now.at_end_of_day - Time.now){
+      question = @game.questions.find_or_create_today
+      question.word.present? && question.no.present? ? question : nil
+    }
+    render_word_not_found if today.blank?
+    data = { game: @game, wordList: @game.words, wordToday: today.word, questionNo: today.no }
+    render json: { ok: true, isSuspended: false, data: data, statusCode: 200 }, status: 200
+  end
 
   def index
     games = Game.left_joins(:owner).where(is_suspended: false, is_published: true, owner: {is_suspended: false}).order(id: :desc).limit(10)
@@ -64,7 +76,7 @@ class Api::V1::GamesController < ApplicationController
 
     # set
     def set_game_by_params
-      @game = Game.find_by_id(params[:id])
+      @game ||= Game.find_by_id(params[:id])
     end
 
     # check
@@ -73,13 +85,13 @@ class Api::V1::GamesController < ApplicationController
     end
 
     def check_suspended_game
-      @game = Game.find_by_id(params[:id])
+      set_game_by_params
       render_game_not_found unless @game.present?
       render_game_suspended if @game.is_suspended || @game.owner.is_suspended
     end
 
     def check_published_game
-      @game = Game.find_by_id(params[:id])
+      set_game_by_params
       render_game_not_found unless @game.present?
       unless @game.is_published
         if !api_v1_user_signed_in? || @game.owner != current_api_v1_user
@@ -90,7 +102,7 @@ class Api::V1::GamesController < ApplicationController
 
     def authenticate_game_owner
       render_user_not_logged_in unless api_v1_user_signed_in?
-      @game = Game.find_by_id(params[:id])
+      set_game_by_params
       render_game_not_owner unless @game.owner == current_api_v1_user
     end
 end
