@@ -20,11 +20,6 @@ class Api::V1::GamesController < ApplicationController
     end
   end
 
-  def supported_langs
-    langs = Utils::Language.langs.map{|k,v| { name: v[:name], code: k.to_s}}
-    render json: { data: langs }, status: 200
-  end
-
   # Authenticated user
   def current_user_index
     games = current_api_v1_user.games
