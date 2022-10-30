@@ -42,7 +42,6 @@ class ApplicationController < ActionController::API
       render json: { ok: false, message: I18n.t('words.not_found')}, status: 404
     end
 
-
   protected
     def skip_session
       request.session_options[:skip] = true

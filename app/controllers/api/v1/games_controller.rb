@@ -93,7 +93,10 @@ class Api::V1::GamesController < ApplicationController
     def check_published_game
       set_game_by_params
       render_game_not_found if @game.blank?
-      render_game_not_published if !@game.is_published && @game.owner != current_api_v1_user
+      if !@game.is_published && @game.owner != current_api_v1_user
+        json = { ok: false, isPublished: false, statusCode: 200, message: I18n.t('games.not_published'), data: @game }
+        render json: json, status: 200
+      end
     end
 
     def authenticate_game_owner
