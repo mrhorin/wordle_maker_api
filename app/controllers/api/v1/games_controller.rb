@@ -4,7 +4,7 @@ class Api::V1::GamesController < ApplicationController
   before_action :authenticate_game_owner, except: [:play, :index, :show,  :current_user_index, :create]
   before_action :check_published_game, except: [:index, :current_user_index, :create, :update, :destroy]
   before_action :check_suspended_game, except: [:index, :current_user_index, :create]
-  before_action :check_suspended_current_user, except: [:index, :show, ]
+  before_action :check_suspended_current_user, except: [:play, :index, :show, ]
 
   def play
     render_game_not_found if @game.blank?
@@ -86,23 +86,19 @@ class Api::V1::GamesController < ApplicationController
 
     def check_suspended_game
       set_game_by_params
-      render_game_not_found unless @game.present?
+      render_game_not_found if @game.blank?
       render_game_suspended if @game.is_suspended || @game.owner.is_suspended
     end
 
     def check_published_game
       set_game_by_params
-      render_game_not_found unless @game.present?
-      unless @game.is_published
-        if !api_v1_user_signed_in? || @game.owner != current_api_v1_user
-          render_game_not_published
-        end
-      end
+      render_game_not_found if @game.blank?
+      render_game_not_published if !@game.is_published && @game.owner != current_api_v1_user
     end
 
     def authenticate_game_owner
-      render_user_not_logged_in unless api_v1_user_signed_in?
+      render_user_not_logged_in if !api_v1_user_signed_in?
       set_game_by_params
-      render_game_not_owner unless @game.owner == current_api_v1_user
+      render_game_not_owner if @game.owner != current_api_v1_user
     end
 end
