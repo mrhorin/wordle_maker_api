@@ -31,7 +31,7 @@ class Api::V1::WordsController < ApplicationController
 
   # Authenticated user
   def create
-    render_game_not_owner if @game.owner != current_api_v1_user
+    return render_game_not_owner if @game.owner != current_api_v1_user
     invalid_words = []
     create_word_list_params.each do |item|
       word = @game.words.build(name: item.upcase)
@@ -48,7 +48,7 @@ class Api::V1::WordsController < ApplicationController
 
   # Authenticated owner
   def edit
-    render_game_not_owner if @game.owner != current_api_v1_user
+    return render_game_not_owner if @game.owner != current_api_v1_user
     edit_params = parse_edit_params params
     words_paginated = @game.words.select(:id, :name).order(edit_params[:sort] => edit_params[:order]).page(edit_params[:page]).per(edit_params[:per])
     pagination = pagination(words_paginated)
@@ -86,22 +86,22 @@ class Api::V1::WordsController < ApplicationController
     # set
     def set_game
       @game ||= Game.find_by_id params[:game_id]
-      render_game_not_found if @game.blank?
-      render_game_suspended if @game.is_suspended || @game.owner.is_suspended
-      render_game_not_published if !@game.is_published && @game.owner != current_api_v1_user
+      return render_game_not_found if @game.blank?
+      return render_game_suspended if @game.is_suspended || @game.owner.is_suspended
+      return render_game_not_published if !@game.is_published && @game.owner != current_api_v1_user
     end
 
     def set_word
       @word ||= Word.find_by_id params[:id]
-      render_word_not_found if @word.blank?
-      render_game_suspended if @word.game.is_suspended || @word.game.owner.is_suspended
-      render_game_not_published if !@word.game.is_published && @word.game.owner != current_api_v1_user
+      return render_word_not_found if @word.blank?
+      return render_game_suspended if @word.game.is_suspended || @word.game.owner.is_suspended
+      return render_game_not_published if !@word.game.is_published && @word.game.owner != current_api_v1_user
     end
 
     # check
     def authenticate_owner
-      render_word_not_found if @word.blank?
-      render_user_not_logged_in if !api_v1_user_signed_in?
-      render_game_not_owner if @word.game.owner != current_api_v1_user
+      return render_word_not_found if @word.blank?
+      return render_user_not_logged_in if !api_v1_user_signed_in?
+      return render_game_not_owner if @word.game.owner != current_api_v1_user
     end
 end

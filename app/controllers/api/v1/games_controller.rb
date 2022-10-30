@@ -7,13 +7,14 @@ class Api::V1::GamesController < ApplicationController
   before_action :check_suspended_current_user, except: [:play, :index, :show, ]
 
   def play
-    render_game_not_found if @game.blank?
-    render_game_owner_suspended if @game.owner.is_suspended
+    return render_game_not_found if @game.blank?
+    return render_game_owner_suspended if @game.owner.is_suspended
+    return render_game_no_words if @game.words.blank?
     today = Rails.cache.fetch("words_today#{@game.id}", skip_nil: true, expires_in: Time.now.at_end_of_day - Time.now){
       question = @game.questions.find_or_create_today
       question.word.present? && question.no.present? ? question : nil
     }
-    render_word_not_found if today.blank?
+    return render_game_no_words if today.blank?
     data = { game: @game, wordList: @game.words, wordToday: today.word, questionNo: today.no }
     render json: { ok: true, isSuspended: false, data: data, statusCode: 200 }, status: 200
   end
@@ -81,27 +82,27 @@ class Api::V1::GamesController < ApplicationController
 
     # check
     def check_suspended_current_user
-      render_current_user_suspended if current_api_v1_user.is_suspended
+      return render_current_user_suspended if current_api_v1_user.is_suspended
     end
 
     def check_suspended_game
       set_game_by_params
-      render_game_not_found if @game.blank?
-      render_game_suspended if @game.is_suspended || @game.owner.is_suspended
+      return render_game_not_found if @game.blank?
+      return render_game_suspended if @game.is_suspended || @game.owner.is_suspended
     end
 
     def check_published_game
       set_game_by_params
-      render_game_not_found if @game.blank?
+      return render_game_not_found if @game.blank?
       if !@game.is_published && @game.owner != current_api_v1_user
         json = { ok: false, isPublished: false, statusCode: 200, message: I18n.t('games.not_published'), data: @game }
-        render json: json, status: 200
+        return render json: json, status: 200
       end
     end
 
     def authenticate_game_owner
-      render_user_not_logged_in if !api_v1_user_signed_in?
+      return render_user_not_logged_in if !api_v1_user_signed_in?
       set_game_by_params
-      render_game_not_owner if @game.owner != current_api_v1_user
+      return render_game_not_owner if @game.owner != current_api_v1_user
     end
 end
