@@ -88,20 +88,14 @@ class Api::V1::WordsController < ApplicationController
       @game ||= Game.find_by_id params[:game_id]
       render_game_not_found if @game.blank?
       render_game_suspended if @game.is_suspended || @game.owner.is_suspended
-      unless @game.is_published
-        # 作成者以外はエラー
-        render_game_not_published if !api_v1_user_signed_in? || @game.owner != current_api_v1_user
-      end
+      render_game_not_published if !@game.is_published && @game.owner != current_api_v1_user
     end
 
     def set_word
       @word ||= Word.find_by_id params[:id]
       render_word_not_found if @word.blank?
       render_game_suspended if @word.game.is_suspended || @word.game.owner.is_suspended
-      unless @word.game.is_published
-        # 作成者以外はエラー
-        render_game_not_published if !api_v1_user_signed_in? || @word.game.owner != current_api_v1_user
-      end
+      render_game_not_published if !@word.game.is_published && @word.game.owner != current_api_v1_user
     end
 
     # check
