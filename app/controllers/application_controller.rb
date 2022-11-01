@@ -4,42 +4,42 @@ class ApplicationController < ActionController::API
 
   private
     # Users
-    def render_user_not_logged_in
-      render json: { ok: false, isLoggedIn: false, statusCode: 401, message: I18n.t('users.not_logged_in')}, status: 401
+    def render_current_user_suspended
+      render json: { ok: false, httpStatus: 403, code: 1001, message: I18n.t('users.is_suspended')}, status: 403
     end
 
-    def render_current_user_suspended
-      render json: { ok: false, isSuspended: true, statusCode: 403, message: I18n.t('users.is_suspended')}, status: 403
+    def render_user_not_logged_in
+      render json: { ok: false, httpStatus: 401, code: 1002, message: I18n.t('users.not_logged_in')}, status: 401
     end
 
     # Games
     def render_game_not_found
-      render json: { ok: false, isSuspended: false, statusCode: 404, message: I18n.t('games.not_found')}, status: 404
-    end
-
-    def render_game_not_published
-      render json: { ok: false, isPublished: false, statusCode: 403, message: I18n.t('games.not_published') }, status: 403
-    end
-
-    def render_game_suspended
-      render json: { ok: false, isSuspended: true, statusCode: 403, message: I18n.t('games.is_suspended')}, status: 403
-    end
-
-    def render_game_owner_suspended
-      render json: { ok: false, isSuspended: true, statusCode: 403, message: I18n.t('games.owner_is_suspended')}, status: 403
-    end
-
-    def render_game_not_owner
-      render json: { ok: false, isLoggedIn: false, statusCode: 401, message: I18n.t('games.not_owner') }, status: 401
+      render json: { ok: false, httpStatus: 404, code: 2001, message: I18n.t('games.not_found')}, status: 404
     end
 
     def render_game_no_words
-      render json: { ok: false, message: I18n.t('games.has_no_words') }, status: 404
+      render json: { ok: false, httpStatus: 404, code: 2002, message: I18n.t('games.has_no_words') }, status: 404
+    end
+
+    def render_game_not_published
+      render json: { ok: false, httpStatus: 403, code: 2003, message: I18n.t('games.not_published') }, status: 403
+    end
+
+    def render_game_suspended
+      render json: { ok: false, httpStatus: 403, code: 2004, message: I18n.t('games.is_suspended')}, status: 403
+    end
+
+    def render_game_owner_suspended
+      render json: { ok: false, httpStatus: 403, code: 2005, message: I18n.t('games.owner_is_suspended')}, status: 403
+    end
+
+    def render_game_not_owner
+      render json: { ok: false, httpStatus: 401, code: 2006, message: I18n.t('games.not_owner') }, status: 401
     end
 
     # Word
     def render_word_not_found
-      render json: { ok: false, message: I18n.t('words.not_found')}, status: 404
+      render json: { ok: false, httpStatus: 404, code: 3001, message: I18n.t('words.not_found')}, status: 404
     end
 
   protected

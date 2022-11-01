@@ -1,22 +1,39 @@
 class Api::V1::GamesController < ApplicationController
   before_action :set_game_by_params, except: [:index, :current_user_index, :create]
   before_action :authenticate_api_v1_user!, except: [:play, :index, :show, ]
-  before_action :authenticate_game_owner, except: [:play, :index, :show,  :current_user_index, :create]
-  before_action :check_published_game, except: [:index, :current_user_index, :create, :update, :destroy]
-  before_action :check_suspended_game, except: [:index, :current_user_index, :create]
-  before_action :check_suspended_current_user, except: [:play, :index, :show, ]
+  before_action :authenticate_owner, except: [:play, :index, :show,  :current_user_index, :create]
+  before_action :check_suspended_current_user, except: [:play, :index, :show ]
+  before_action :check_not_found, except: [:index, :current_user_index, :create, :update, :destroy]
+  before_action :check_suspended, except: [:index, :current_user_index, :create]
 
   def play
-    return render_game_not_found if @game.blank?
-    return render_game_owner_suspended if @game.owner.is_suspended
-    return render_game_no_words if @game.words.blank?
-    today = Rails.cache.fetch("words_today#{@game.id}", skip_nil: true, expires_in: Time.now.at_end_of_day - Time.now){
-      question = @game.questions.find_or_create_today
-      question.word.present? && question.no.present? ? question : nil
-    }
-    return render_game_no_words if today.blank?
-    data = { game: @game, wordList: @game.words, wordToday: today.word, questionNo: today.no }
-    render json: { ok: true, isSuspended: false, data: data, statusCode: 200 }, status: 200
+    is_private = !@game.is_published && @game.owner != current_api_v1_user
+    has_no_words = @game.words.blank?
+    if is_private || has_no_words
+      data = {
+        game: @game,
+        wordList: [],
+        wordToday: "",
+        questionNo: 0,
+        isPrivate: is_private,
+        hasNoWords: has_no_words
+      }
+      return render json: { ok: true, statusCode: 200, data: data }, status: 200
+    else
+      today = Rails.cache.fetch("words_today#{@game.id}", skip_nil: true, expires_in: Time.now.at_end_of_day - Time.now){
+        question = @game.questions.find_or_create_today
+        question.word.present? && question.no.present? ? question : nil
+      }
+      data = {
+        game: @game,
+        wordList: @game.words,
+        wordToday: today.word.name,
+        questionNo: today.no,
+        isPrivate: is_private ,
+        hasNoWords: has_no_words
+      }
+      return render json: { ok: true, statusCode: 200, data: data }, status: 200
+    end
   end
 
   def index
@@ -25,12 +42,7 @@ class Api::V1::GamesController < ApplicationController
   end
 
   def show
-    if @game.present?
-      render_game_owner_suspended if @game.owner.is_suspended
-      render json: { ok: true, isSuspended: false, data: @game, statusCode: 200 }, status: 200
-    else
-      render_game_not_found
-    end
+    render json: { ok: true, isSuspended: false, data: @game, statusCode: 200 }, status: 200
   end
 
   # Authenticated user
@@ -40,7 +52,13 @@ class Api::V1::GamesController < ApplicationController
   end
 
   def create
-    game = Game.new(title: create_game_params[:title], desc: create_game_params[:desc], lang: create_game_params[:lang], char_count: create_game_params[:char_count], user_id: current_api_v1_user.id)
+    game = Game.new(
+      title: create_game_params[:title],
+      desc: create_game_params[:desc],
+      lang: create_game_params[:lang],
+      char_count: create_game_params[:char_count],
+      user_id: current_api_v1_user.id
+    )
     if game.save
       render json: { ok: true, isLoggedIn: true, message: "Created.", data: game }, status: 201
     else
@@ -80,29 +98,26 @@ class Api::V1::GamesController < ApplicationController
       @game ||= Game.find_by_id(params[:id])
     end
 
+    # authenticate
+    def authenticate_owner
+      return render_user_not_logged_in if !api_v1_user_signed_in?
+      set_game_by_params
+      return render_game_not_owner if @game.owner != current_api_v1_user
+    end
+
     # check
     def check_suspended_current_user
       return render_current_user_suspended if current_api_v1_user.is_suspended
     end
 
-    def check_suspended_game
+    def check_not_found
+      set_game_by_params
+      return render_game_not_found if @game.blank?
+    end
+
+    def check_suspended
       set_game_by_params
       return render_game_not_found if @game.blank?
       return render_game_suspended if @game.is_suspended || @game.owner.is_suspended
-    end
-
-    def check_published_game
-      set_game_by_params
-      return render_game_not_found if @game.blank?
-      if !@game.is_published && @game.owner != current_api_v1_user
-        json = { ok: false, isPublished: false, statusCode: 200, message: I18n.t('games.not_published'), data: @game }
-        return render json: json, status: 200
-      end
-    end
-
-    def authenticate_game_owner
-      return render_user_not_logged_in if !api_v1_user_signed_in?
-      set_game_by_params
-      return render_game_not_owner if @game.owner != current_api_v1_user
     end
 end

@@ -1,13 +1,13 @@
 en:
   users:
     not_logged_in: You are not logged in.
-    is_suspended:  This account is currently suspended.
+    is_suspended:  Your account is currently suspended.
   games:
     not_found: This game is not found.
-    not_owner: You are not the owner of this game.
+    has_no_words: This game has no words yet.
     not_published: This game is not currently published.
     is_suspended:  This game is currently suspended.
     owner_is_suspended: The owner of this game is suspended.
-    has_no_words: This game has no words yet.
+    not_owner: You are not the owner of this game.
   words:
     not_found: This word is not found.
