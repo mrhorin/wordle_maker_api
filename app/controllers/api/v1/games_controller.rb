@@ -3,7 +3,7 @@ class Api::V1::GamesController < ApplicationController
   before_action :authenticate_api_v1_user!, except: [:play, :index, :show, ]
   before_action :authenticate_owner, except: [:play, :index, :show,  :current_user_index, :create]
   before_action :check_suspended_current_user, except: [:play, :index, :show ]
-  before_action :check_not_found, except: [:index, :current_user_index, :create, :update, :destroy]
+  before_action :check_not_found, except: [:index, :current_user_index, :create]
   before_action :check_suspended, except: [:index, :current_user_index, :create]
 
   def play
@@ -102,6 +102,7 @@ class Api::V1::GamesController < ApplicationController
     def authenticate_owner
       return render_user_not_logged_in if !api_v1_user_signed_in?
       set_game_by_params
+      return render_game_not_found if @game.blank?
       return render_game_not_owner if @game.owner != current_api_v1_user
     end
 
