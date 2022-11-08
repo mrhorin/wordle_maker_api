@@ -26,7 +26,7 @@ class Api::V1::GamesController < ApplicationController
       }
       data = {
         game: @game,
-        wordList: @game.words,
+        wordList: @game.word_list,
         wordToday: today.word.name,
         questionNo: today.no,
         isPrivate: is_private ,
