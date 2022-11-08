@@ -11,8 +11,9 @@ class Game < ApplicationRecord
     def find_or_create_today
       find_or_create_by(published_on: Date.today) do |q|
         q.word_id = Word.where(game_id: q.game_id).pluck(:id).shuffle.first
-        last_question = all.order(no: 'DESC').first
-        q.no = last_question ? last_question.no + 1 : 1
+        q.no = q.game.current_question_no ? q.game.current_question_no + 1 : 1
+        # Should update current_question_no
+        q.game.update(current_question_no: q.no)
       end
     end
   end
