@@ -7,11 +7,8 @@ class Api::V1::WordsController < ApplicationController
   before_action :authenticate_owner, except: [:index, :today, :create, :edit, :destroy]
 
   def index
-    word_list = Rails.cache.fetch("words_index#{@game.id}", skip_nil: true, expires_in: Time.now.at_end_of_day - Time.now){
-      @game.word_list.present? ? @game.word_list : nil
-    }
-    if word_list.present?
-      render json: { ok: true, data: word_list }, status: 200
+    if @game.words.present?
+      render json: { ok: true, data: @game.words }, status: 200
     else
       render_game_no_words
     end

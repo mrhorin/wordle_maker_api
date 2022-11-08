@@ -20,13 +20,16 @@ class Api::V1::GamesController < ApplicationController
       }
       return render json: { ok: true, statusCode: 200, data: data }, status: 200
     else
-      today = Rails.cache.fetch("words_today#{@game.id}", skip_nil: true, expires_in: Time.now.at_end_of_day - Time.now){
+      today = Rails.cache.fetch("word_today#{@game.id}", skip_nil: true, expires_in: Time.now.at_end_of_day - Time.now){
         question = @game.questions.find_or_create_today
         question.word.present? && question.no.present? ? question : nil
       }
+      word_list = Rails.cache.fetch("word_list#{@game.id}", skip_nil: true, expires_in: Time.now.at_end_of_day - Time.now){
+        @game.word_list.present? ? @game.word_list : nil
+      }
       data = {
         game: @game,
-        wordList: @game.word_list,
+        wordList: word_list,
         wordToday: today.word.name,
         questionNo: today.no,
         isPrivate: is_private ,
