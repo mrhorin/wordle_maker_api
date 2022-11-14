@@ -58,3 +58,4 @@ production:
   username: root
   password: wordle_maker
   database: wordle_maker_api_production
+  collation: utf8mb4_0900_bin

@@ -30,8 +30,8 @@ class Api::V1::WordsController < ApplicationController
   def create
     return render_game_not_owner if @game.owner != current_api_v1_user
     invalid_words = []
-    create_word_list_params.each do |item|
-      word = @game.words.build(name: item.upcase)
+    create_word_list_params.each do |w|
+      word = @game.words.build(name: w.upcase)
       invalid_words << word unless word.save
     end
     if invalid_words.length == 0

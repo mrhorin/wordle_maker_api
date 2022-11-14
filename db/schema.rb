@@ -12,7 +12,7 @@
 
 ActiveRecord::Schema.define(version: 2022_11_08_092256) do
 
-  create_table "games", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+  create_table "games", charset: "utf8mb4", collation: "utf8mb4_bin", force: :cascade do |t|
     t.string "title", limit: 100, null: false
     t.string "lang", limit: 2, null: false
     t.integer "char_count", default: 5, null: false
@@ -27,7 +27,7 @@ ActiveRecord::Schema.define(version: 2022_11_08_092256) do
     t.integer "current_question_no"
   end
 
-  create_table "questions", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+  create_table "questions", charset: "utf8mb4", collation: "utf8mb4_bin", force: :cascade do |t|
     t.integer "game_id"
     t.integer "word_id"
     t.date "published_on"
@@ -38,7 +38,7 @@ ActiveRecord::Schema.define(version: 2022_11_08_092256) do
     t.index ["game_id", "published_on"], name: "index_questions_on_game_id_and_published_on", unique: true
   end
 
-  create_table "users", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+  create_table "users", charset: "utf8mb4", collation: "utf8mb4_bin", force: :cascade do |t|
     t.string "provider", default: "", null: false
     t.string "uid", default: "", null: false
     t.string "encrypted_password", default: "", null: false
@@ -52,7 +52,7 @@ ActiveRecord::Schema.define(version: 2022_11_08_092256) do
     t.index ["uid", "provider"], name: "index_users_on_uid_and_provider", unique: true
   end
 
-  create_table "words", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+  create_table "words", charset: "utf8mb4", collation: "utf8mb4_bin", force: :cascade do |t|
     t.string "name"
     t.integer "game_id"
     t.datetime "created_at", precision: 6, null: false
