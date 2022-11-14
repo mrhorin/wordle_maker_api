@@ -23,7 +23,7 @@ set :deploy_to, "/var/www/#{fetch(:application)}/api"
 set :pty, true
 
 # Default value for :linked_files is []
-# append :linked_files, "config/database.yml", 'config/master.key'
+append :linked_files, "config/master.key"
 
 # Default value for linked_dirs is []
 append :linked_dirs, "log", "tmp/pids", "tmp/cache", "tmp/sockets", "public", "vendor", "storage", ".bundle"
@@ -67,9 +67,6 @@ after 'puma:config', 'puma:systemd:config'
 # bundle
 set :bundle_jobs, 4
 set :bundle_bins, fetch(:bundle_bins).to_a.concat(%w{ puma pumactl })
-
-# Upload master.key
-append :linked_files, "config/master.key"
 
 after 'deploy:publishing', 'deploy:restart'
 

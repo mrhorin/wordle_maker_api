@@ -67,8 +67,7 @@ set :default_env, {
   LANG: 'C.UTF-8'
 }
 
-# Upload production.key
-append :linked_files, "config/credentials/production.key"
+append :linked_files, "config/credentials/production.key", "public/robots.txt"
 
 namespace :deploy do
   namespace :check do
@@ -76,6 +75,14 @@ namespace :deploy do
       on roles(:app), in: :sequence, wait: 10 do
         unless test("[ -f #{shared_path}/config/credentials/production.key ]")
           upload! 'config/credentials/production.key', "#{shared_path}/config/credentials/production.key"
+        end
+      end
+    end
+
+    before :linked_files, :set_robots_txt do
+      on roles(:app), in: :sequence, wait: 10 do
+        unless test("[ -f #{shared_path}/public/robots.txt ]")
+          upload! 'public/robots.txt', "#{shared_path}/public/robots.txt"
         end
       end
     end
