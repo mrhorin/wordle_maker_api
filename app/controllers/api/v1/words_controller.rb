@@ -7,8 +7,8 @@ class Api::V1::WordsController < ApplicationController
   before_action :authenticate_owner, except: [:index, :today, :create, :edit, :destroy]
 
   def index
-    if @game.words.present?
-      render json: { ok: true, data: @game.words }, status: 200
+    if @game.words.select(:name).present?
+      render json: { ok: true, data: @game.words.select(:name).map{|w| w.name} }, status: 200
     else
       render_game_no_words
     end
