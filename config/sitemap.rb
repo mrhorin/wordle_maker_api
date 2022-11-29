@@ -4,7 +4,6 @@ SitemapGenerator::Sitemap.default_host = "#{Rails.configuration.app[:URL][:UI][:
 SitemapGenerator::Sitemap.create do
   Game.find_each do |g|
     add "/games/#{g.id}", lastmod: g.updated_at
-    add "/ja/games/#{g.id}", lastmod: g.updated_at
   end
 end
 
