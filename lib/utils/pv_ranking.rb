@@ -12,9 +12,9 @@ class Utils::PvRanking
         report = pv_report
         # pagePath が games の行を抽出
         report[:rows].select!{|row| row[:dimension_values][1][:value].match(/\/games\/\d+/)}
-        report[:rows].take(10).map do |row|
+        report[:rows].map do |row|
           row[:dimension_values][1][:value].slice(/games\/(\d+)/, 1).to_i
-        end
+        end.uniq.take(10)
       else
         Game.all.limit(10).map{|g| g.id}
       end
