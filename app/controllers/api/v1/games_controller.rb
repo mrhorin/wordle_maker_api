@@ -46,7 +46,7 @@ class Api::V1::GamesController < ApplicationController
   end
 
   def pv_ranking
-    games = Utils::PvRanking.games.map{|id| Game.find id}
+    games = Utils::PvRanking.games.each_with_index.map{|id, index| {game: Game.find(id), rank: index + 1}}
     render json: { ok: true, data: games, statusCode: 200 }, status: 200
   end
 
