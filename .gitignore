@@ -34,3 +34,5 @@
 /config/credentials/development.key
 
 /config/credentials/test.key
+
+/config/ga4_credential.json

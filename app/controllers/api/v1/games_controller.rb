@@ -1,10 +1,10 @@
 class Api::V1::GamesController < ApplicationController
-  before_action :set_game_by_params, except: [:index, :current_user_index, :create]
-  before_action :authenticate_api_v1_user!, except: [:play, :index, :show, ]
-  before_action :authenticate_owner, except: [:play, :index, :show,  :current_user_index, :create]
-  before_action :check_suspended_current_user, except: [:play, :index, :show ]
-  before_action :check_not_found, except: [:index, :current_user_index, :create]
-  before_action :check_suspended, except: [:index, :current_user_index, :create]
+  before_action :set_game_by_params, except: [:index, :pv_ranking, :current_user_index, :create]
+  before_action :authenticate_api_v1_user!, except: [:play, :index, :pv_ranking, :show, ]
+  before_action :authenticate_owner, except: [:play, :index, :pv_ranking, :show, :current_user_index, :create]
+  before_action :check_suspended_current_user, except: [:play, :index, :pv_ranking, :show ]
+  before_action :check_not_found, except: [:index, :pv_ranking, :current_user_index, :create]
+  before_action :check_suspended, except: [:index, :pv_ranking, :current_user_index, :create]
 
   def play
     is_private = !@game.is_published && @game.owner != current_api_v1_user
@@ -42,6 +42,11 @@ class Api::V1::GamesController < ApplicationController
 
   def index
     games = Game.left_joins(:owner).where(is_suspended: false, is_published: true, owner: {is_suspended: false}).order(id: :desc).limit(10)
+    render json: { ok: true, data: games, statusCode: 200 }, status: 200
+  end
+
+  def pv_ranking
+    games = Utils::PvRanking.games.map{|id| Game.find id}
     render json: { ok: true, data: games, statusCode: 200 }, status: 200
   end
 

@@ -67,7 +67,7 @@ set :default_env, {
   LANG: 'C.UTF-8'
 }
 
-append :linked_files, "config/credentials/production.key", "public/robots.txt"
+append :linked_files, "config/credentials/production.key", "config/ga4_credential.json", "public/robots.txt"
 
 namespace :deploy do
   namespace :check do
@@ -75,6 +75,14 @@ namespace :deploy do
       on roles(:app), in: :sequence, wait: 10 do
         unless test("[ -f #{shared_path}/config/credentials/production.key ]")
           upload! 'config/credentials/production.key', "#{shared_path}/config/credentials/production.key"
+        end
+      end
+    end
+
+    before :linked_files, :set_ga4_credential do
+      on roles(:app), in: :sequence, wait: 10 do
+        unless test("[ -f #{shared_path}/config/ga4_credential.json ]")
+          upload! 'config/ga4_credential.json', "#{shared_path}/config/ga4_credential.json"
         end
       end
     end

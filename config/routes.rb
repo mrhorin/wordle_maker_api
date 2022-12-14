@@ -19,6 +19,7 @@ Rails.application.routes.draw do
         collection do
           get 'play/:id', to: 'games#play'
           get 'current-user-index', to: 'games#current_user_index'
+          get 'pv-ranking', to: 'games#pv_ranking'
         end
 
         # /games/:game_id/words
