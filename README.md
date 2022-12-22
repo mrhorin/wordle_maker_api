@@ -23,6 +23,7 @@
 |data.game|object|idパラメータで指定されたGameレコード|
 |data.wordList|array|Gameに登録されたWordの文字列リスト|
 |data.wordToday|string|本日の問題のWordの文字列|
+|data.questionNo|number|第何回目の問題かを示す数値|
 |data.isPrivate|boolean|ゲームが非公開且つ作成者じゃない場合は true|
 |data.hasNoWords|boolean|ゲームにWordが未登録の場合は true|
 
