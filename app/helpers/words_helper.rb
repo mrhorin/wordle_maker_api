@@ -4,6 +4,6 @@ module WordsHelper
     per = params[:per].present? ? params[:per] : 50
     sort = params[:s] == "name" ? "name" : "id"
     order = params[:o] == "d" ? "desc" : "asc"
-    { page: page, sort: sort, order: order }
+    { page: page, per: per, sort: sort, order: order }
   end
 end
